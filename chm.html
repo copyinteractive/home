@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>The Vanishing Formula - Chemistry Detective Story</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Creepster&family=Roboto:wght@300;400;700&display=swap');
+  
+  body {
+    font-family: 'Roboto', sans-serif;
+    background: linear-gradient(135deg, #0c1445 0%, #1a237e 50%, #000051 100%);
+    color: #e8eaf6;
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 20px;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  
+  h1 {
+    font-family: 'Creepster', cursive;
+    text-align: center;
+    color: #00e676;
+    text-shadow: 0 0 20px #00e676;
+    font-size: 2.5em;
+    margin-bottom: 10px;
+    animation: glow 2s ease-in-out infinite alternate;
+  }
+  
+  @keyframes glow {
+    from { text-shadow: 0 0 20px #00e676; }
+    to { text-shadow: 0 0 30px #00e676, 0 0 40px #00e676; }
+  }
+  
+  .subtitle {
+    text-align: center;
+    color: #90caf9;
+    font-style: italic;
+    margin-bottom: 30px;
+  }
+  
+  .passage {
+    display: none;
+    background: rgba(13, 71, 161, 0.2);
+    border: 2px solid #1565c0;
+    border-radius: 15px;
+    padding: 30px;
+    margin: 20px 0;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    animation: fadeIn 0.8s ease-in;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+  
+  .passage.active {
+    display: block;
+  }
+  
+  .story-text {
+    font-size: 1.1em;
+    margin-bottom: 25px;
+    text-align: justify;
+  }
+  
+  .choice {
+    display: block;
+    margin: 15px 0;
+    padding: 18px 25px;
+    background: linear-gradient(45deg, #1565c0, #1976d2);
+    border: none;
+    border-radius: 25px;
+    cursor: pointer;
+    color: #fff;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: 1em;
+    transition: all 0.3s ease;
+    transform: perspective(1000px);
+    text-align: left;
+    box-shadow: 0 4px 15px rgba(25, 118, 210, 0.3);
+  }
+  
+  .choice:hover {
+    background: linear-gradient(45deg, #1976d2, #2196f3);
+    transform: translateY(-3px);
+    box-shadow: 0 6px 20px rgba(25, 118, 210, 0.5);
+  }
+  
+  .choice:active {
+    transform: translateY(-1px);
+  }
+  
+  .chemistry-choice {
+    background: linear-gradient(45deg, #ff6f00, #ff8f00);
+    box-shadow: 0 4px 15px rgba(255, 111, 0, 0.3);
+  }
+  
+  .chemistry-choice:hover {
+    background: linear-gradient(45deg, #ff8f00, #ffa000);
+    box-shadow: 0 6px 20px rgba(255, 111, 0, 0.5);
+  }
+  
+  .knowledge-panel {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: rgba(13, 71, 161, 0.9);
+    padding: 20px;
+    border-radius: 15px;
+    border: 2px solid #00e676;
+    min-width: 200px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  }
+  
+  .knowledge-title {
+    color: #00e676;
+    font-weight: bold;
+    margin-bottom: 10px;
+    text-align: center;
+  }
+  
+  .knowledge-item {
+    color: #90caf9;
+    font-size: 0.9em;
+    margin: 5px 0;
+    padding: 5px 10px;
+    background: rgba(0, 0, 0, 0.3);
+    border-radius: 5px;
+  }
+  
+  .chemical-formula {
+    font-family: 'Courier New', monospace;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 10px;
+    border-radius: 8px;
+    border-left: 4px solid #00e676;
+    margin: 15px 0;
+    color: #00e676;
+    font-weight: bold;
+  }
+  
+  .lab-equipment {
+    text-align: center;
+    font-size: 3em;
+    margin: 20px 0;
+    animation: bounce 2s infinite;
+  }
+  
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
+  
+  .reaction-animation {
+    text-align: center;
+    font-size: 2em;
+    margin: 20px 0;
+    color: #ff6f00;
+    animation: react 3s infinite;
+  }
+  
+  @keyframes react {
+    0% { color: #ff6f00; transform: scale(1); }
+    50% { color: #00e676; transform: scale(1.1); }
+    100% { color: #ff6f00; transform: scale(1); }
+  }
+  
+  .danger-warning {
+    background: linear-gradient(45deg, #d32f2f, #f44336);
+    border: 2px solid #ff1744;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: bold;
+    animation: warning 1.5s infinite;
+  }
+  
+  @keyframes warning {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+  }
+  
+  .success-highlight {
+    background: linear-gradient(45deg, #2e7d32, #4caf50);
+    border: 2px solid #00e676;
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    text-align: center;
+    font-weight: bold;
+  }
+  
+  @media (max-width: 768px) {
+    .knowledge-panel {
+      position: relative;
+      right: auto;
+      top: auto;
+      margin: 20px 0;
+    }
+    
+    body {
+      padding: 10px;
+    }
+    
+    h1 {
+      font-size: 2em;
+    }
+  }
+</style>
+</head>
+<body>
+
+<h1>The Vanishing Formula</h1>
+<div class="subtitle">A Chemistry Detective Mystery</div>
+
+<div class="knowledge-panel">
+  <div class="knowledge-title">🧪 Detective Notes</div>
+  <div id="knowledge-display">
+    <div class="knowledge-item">pH Understanding: 0/3</div>
+    <div class="knowledge-item">Chemical Tests: 0/4</div>
+    <div class="knowledge-item">Clues Found: 0/5</div>
+  </div>
+</div>
+
+<!-- START PASSAGE -->
+<div id="start" class="passage active">
+  <div class="lab-equipment">🔬⚗️🧪</div>
+  <div class="story-text">
+    The prestigious Mendeleev Research Institute is in chaos. Dr. Elena Vasquez, the world's leading expert in sustainable chemistry, has vanished without a trace. Her revolutionary formula for converting plastic waste into clean energy has disappeared with her.
+    
+    <br><br>
+    
+    As the institute's forensic chemistry consultant, you arrive at her abandoned laboratory. The air still carries the faint scent of chemicals, and equipment lies scattered across the benches. A half-finished experiment bubbles ominously in a corner.
+    
+    <br><br>
+    
+    <strong>Your mission:</strong> Use your chemistry knowledge to analyze the clues, understand what happened, and locate the missing formula before it falls into the wrong hands.
+  </div>
+  
+  <button class="choice" onclick="goTo('lab_entrance')">🚪 Enter the laboratory</button>
+  <button class="choice" onclick="goTo('security_footage')">📹 Check security footage first</button>
+</div>
+
+<!-- LAB ENTRANCE -->
+<div id="lab_entrance" class="passage">
+  <div class="story-text">
+    The laboratory is eerily quiet. Three areas immediately catch your attention: a workbench with unknown solutions, a fume hood with residual chemical odors, and Dr. Vasquez's computer terminal still logged in.
+    
+    <br><br>
+    
+    On the workbench, you notice three beakers containing different solutions:
+    <br>• <strong>Solution A:</strong> Clear, colorless liquid
+    <br>• <strong>Solution B:</strong> Yellow liquid with a pungent smell
+    <br>• <strong>Solution C:</strong> Red liquid that seems to be smoking slightly
+  </div>
+  
+  <div class="chemical-formula">
+    Lab Note Visible: "pH critical for polymer breakdown - check acidic conditions"
+  </div>
+  
+  <button class="choice chemistry-choice" onclick="testSolutions()">🧪 Test the mysterious solutions</button>
+  <button class="choice" onclick="goTo('computer')">💻 Investigate the computer terminal</button>
+  <button class="choice" onclick="goTo('fume_hood')">🌬️ Examine the fume hood</button>
+</div>
+
+<!-- SOLUTION TESTING -->
+<div id="solution_test" class="passage">
+  <div class="story-text">
+    You decide to test the solutions systematically. As a trained chemist, you know that identifying unknown substances requires careful analysis.
+    
+    <br><br>
+    
+    You find pH strips, litmus paper, and a digital pH meter on the shelf. Which approach will give you the most reliable information about these solutions?
+  </div>
+  
+  <div class="lab-equipment">🧪⚡📊</div>
+  
+  <button class="choice chemistry-choice" onclick="phTest('strips')">📏 Use pH strips for quick testing</button>
+  <button class="choice chemistry-choice" onclick="phTest('digital')">📱 Use digital pH meter for precise readings</button>
+  <button class="choice chemistry-choice" onclick="phTest('litmus')">🔵 Use litmus paper to test each solution</button>
+  <button class="choice" onclick="goTo('skip_test')">⏭️ Skip testing - examine other clues instead</button>
+</div>
+
+<!-- pH TEST RESULTS -->
+<div id="ph_results" class="passage">
+  <div class="story-text" id="ph_story_text">
+    [Test results will appear here]
+  </div>
+  
+  <div id="ph_analysis" class="success-highlight" style="display: none;">
+    <strong>Excellent detective work!</strong> Your pH analysis reveals crucial information about Dr. Vasquez's research direction.
+  </div>
+  
+  <button class="choice" onclick="goTo('computer')">💻 Check the computer for more clues</button>
+  <button class="choice chemistry-choice" onclick="goTo('advanced_test')">🔬 Perform additional chemical tests</button>
+</div>
+
+<!-- COMPUTER TERMINAL -->
+<div id="computer" class="passage">
+  <div class="story-text">
+    Dr. Vasquez's computer screen shows her last research notes. The document is titled "Project Clean Catalyst" and contains several encrypted chemical equations. However, one section is highlighted:
+    
+    <div class="chemical-formula">
+      "Breakthrough achieved! Optimal pH range 1.2-2.5 for polymer chain breaking.
+      <br>Temperature must remain below 85°C to prevent dangerous gas evolution.
+      <br>URGENT: Someone has been asking about the formula. Moving to secure location."
+    </div>
+    
+    The timestamp shows this was written just 3 hours ago. At the bottom of the screen, you notice an partially typed message:
+    <br><br>
+    <em>"If something happens to me, check the solution with pH 1.8. The answer lies in the—"</em>
+    <br><br>
+    The message cuts off abruptly.
+  </div>
+  
+  <div class="danger-warning" id="acid_warning" style="display: none;">
+    ⚠️ DANGER: Working with strong acids requires proper safety equipment!
+  </div>
+  
+  <button class="choice chemistry-choice" onclick="findAcidicSolution()">🔍 Find the solution with pH 1.8</button>
+  <button class="choice" onclick="goTo('security_footage')">📹 Check security cameras</button>
+  <button class="choice" onclick="goTo('encrypted_files')">🔐 Try to decrypt the chemical equations</button>
+</div>
+
+<!-- CLIMACTIC DISCOVERY -->
+<div id="final_discovery" class="passage">
+  <div class="reaction-animation">⚗️ → 🧪 → ✨ → 💡</div>
+  
+  <div class="story-text">
+    <strong>BREAKTHROUGH!</strong>
+    <br><br>
+    Your chemical analysis has revealed Dr. Vasquez's secret message! The strongly acidic solution (pH 1.8) wasn't just any acid - it was a special indicator solution. When you added the right catalyst from her notes, the solution changed color and revealed invisible ink!
+    
+    <br><br>
+    
+    The hidden message reads: <em>"Formula hidden in lab freezer, compartment 3B. Trust only Agent Martinez from Environmental Protection Agency. Corporate spy in building - someone with chemistry background trying to steal research for plastic industry profits."</em>
+    
+    <br><br>
+    
+    You've not only found the missing formula but uncovered a case of industrial espionage! Your understanding of pH, chemical indicators, and reaction conditions was crucial to solving this mystery.
+  </div>
+  
+  <div class="success-highlight">
+    🎉 <strong>Case Solved!</strong> You've successfully used chemistry to save revolutionary environmental research!
+  </div>
+  
+  <button class="choice" onclick="resetGame()">🔄 Start a new case</button>
+  <button class="choice" onclick="showSummary()">📋 View chemistry concepts learned</button>
+</div>
+
+<script>
+let gameState = {
+  phKnowledge: 0,
+  chemicalTests: 0,
+  cluesFound: 0,
+  testedSolutions: false,
+  foundAcidSolution: false
+};
+
+function goTo(passageId) {
+  // Hide all passages
+  document.querySelectorAll('.passage').forEach(p => {
+    p.classList.remove('active');
+  });
+  
+  // Show target passage
+  document.getElementById(passageId).classList.add('active');
+  
+  // Update knowledge display
+  updateKnowledge();
+}
+
+function testSolutions() {
+  goTo('solution_test');
+  gameState.cluesFound += 1;
+}
+
+function phTest(method) {
+  gameState.phKnowledge += 1;
+  gameState.chemicalTests += 1;
+  gameState.testedSolutions = true;
+  
+  let storyText = document.getElementById('ph_story_text');
+  let analysis = document.getElementById('ph_analysis');
+  
+  if (method === 'digital') {
+    storyText.innerHTML = `
+      <strong>Excellent choice!</strong> The digital pH meter provides precise readings:
+      <br><br>
+      • <strong>Solution A:</strong> pH 7.0 (neutral water - likely a control)
+      <br>• <strong>Solution B:</strong> pH 1.8 (very acidic - matches the computer note!)
+      <br>• <strong>Solution C:</strong> pH 13.2 (very basic - caustic solution)
+      <br><br>
+      The acidic solution (B) is exactly what Dr. Vasquez mentioned in her notes! This could be the key to finding her hidden message.
+    `;
+    analysis.style.display = 'block';
+  } else if (method === 'strips') {
+    storyText.innerHTML = `
+      Using pH strips, you get approximate readings:
+      <br><br>
+      • <strong>Solution A:</strong> Around pH 7 (neutral)
+      <br>• <strong>Solution B:</strong> Very acidic (pH 1-2)
+      <br>• <strong>Solution C:</strong> Very basic (pH 13-14)
+      <br><br>
+      The acidic solution matches what Dr. Vasquez mentioned, but you need more precise measurements to be certain.
+    `;
+  } else {
+    storyText.innerHTML = `
+      Litmus paper testing reveals:
+      <br><br>
+      • <strong>Solution A:</strong> No color change (neutral)
+      <br>• <strong>Solution B:</strong> Turns red (acidic)
+      <br>• <strong>Solution C:</strong> Turns blue (basic)
+      <br><br>
+      You know solution B is acidic, but litmus can't tell you the exact pH value that Dr. Vasquez specified.
+    `;
+  }
+  
+  goTo('ph_results');
+}
+
+function findAcidicSolution() {
+  if (gameState.testedSolutions) {
+    gameState.foundAcidSolution = true;
+    gameState.cluesFound += 2;
+    goTo('final_discovery');
+  } else {
+    document.getElementById('acid_warning').style.display = 'block';
+    setTimeout(() => {
+      alert("You need to test the solutions first to know which one has pH 1.8!");
+      goTo('lab_entrance');
+    }, 2000);
+  }
+}
+
+function updateKnowledge() {
+  let display = document.getElementById('knowledge-display');
+  display.innerHTML = `
+    <div class="knowledge-item">pH Understanding: ${gameState.phKnowledge}/3</div>
+    <div class="knowledge-item">Chemical Tests: ${gameState.chemicalTests}/4</div>
+    <div class="knowledge-item">Clues Found: ${gameState.cluesFound}/5</div>
+  `;
+}
+
+function resetGame() {
+  gameState = {
+    phKnowledge: 0,
+    chemicalTests: 0,
+    cluesFound: 0,
+    testedSolutions: false,
+    foundAcidSolution: false
+  };
+  goTo('start');
+}
+
+function showSummary() {
+  alert(`
+Chemistry Concepts Learned:
+• pH Scale and Measurement Methods
+• Acid-Base Indicators
+• Chemical Analysis Techniques
+• Laboratory Safety Procedures
+• Real-world Applications of Chemistry
+
+Great job using science to solve mysteries!
+  `);
+}
+
+// Initialize knowledge display
+updateKnowledge();
+</script>
+
+</body>
+  </html>
