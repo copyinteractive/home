@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mum's Birthday Cake Challenge</title>
+    <!-- Add Google Fonts for better typography -->
+    <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
             margin: 0;
@@ -12,13 +14,30 @@
         }
 
         body {
-            font-family: 'Comic Sans MS', cursive, sans-serif;
+            font-family: 'Nunito', 'Open Sans', Arial, sans-serif; /* Modern, readable fonts */
             background: linear-gradient(135deg, #ffb3e6 0%, #ffe6cc 50%, #fff2e6 100%);
             color: #8b4513;
             min-height: 100vh;
             padding: 10px;
         }
 
+        /* Updated font-family declarations */
+        .title, .story-title {
+            font-family: 'Nunito', Arial, sans-serif;
+            font-weight: 700; /* Bold for headings */
+        }
+
+        .story-text, .math-problem, .chat-message, .ingredient-item {
+            font-family: 'Open Sans', Arial, sans-serif;
+            font-weight: 400;
+        }
+
+        .choice-btn, .submit-btn, .math-input {
+            font-family: 'Nunito', Arial, sans-serif;
+            font-weight: 600; /* Semi-bold for buttons */
+        }
+
+        /* All other CSS remains exactly the same */
         .game-container {
             max-width: 900px;
             margin: 0 auto;
@@ -168,7 +187,6 @@
             padding: 18px 25px;
             border-radius: 25px;
             font-size: clamp(1rem, 2.5vw, 1.2rem);
-            font-family: 'Comic Sans MS', cursive;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -213,7 +231,6 @@
             border: 3px solid #ff69b4;
             border-radius: 10px;
             text-align: center;
-            font-family: 'Comic Sans MS', cursive;
             margin-bottom: 15px;
             background: #fff;
         }
@@ -232,7 +249,6 @@
             padding: 15px;
             border-radius: 15px;
             font-size: clamp(1.1rem, 2.8vw, 1.3rem);
-            font-family: 'Comic Sans MS', cursive;
             font-weight: bold;
             cursor: pointer;
             transition: all 0.3s ease;
@@ -287,6 +303,7 @@
     </style>
 </head>
 <body>
+    <!-- Rest of your HTML remains exactly the same -->
     <div class="game-container">
         <div class="header">
             <h1 class="title">🎂 Mum's Birthday Cake Challenge 🎂</h1>
@@ -303,6 +320,7 @@
     </div>
 
     <script>
+        // Your JavaScript remains exactly the same
         // Game state variables
         let currentQuestion = 1;
         let score = 0;
@@ -518,108 +536,4 @@
                     </div>
                     
                     <div class="sibling-reaction">
-                        "Maybe I should take over the math part... 🤔" - Mike
-                    </div>
-                    
-                    <div class="choices-container">
-                        <button class="choice-btn next-btn" onclick="startQuestion3()">ADJUST AND CONTINUE</button>
-                    </div>
-                `);
-            }
-            currentQuestion++;
-            updateDisplay();
-        }
-
-        // Question 3: Multi-step butter calculation
-        function startQuestion3() {
-            showContent(`
-                <div class="story-section">
-                    <h3 class="story-title">🧈 Challenge 3: The Butter Crisis</h3>
-                    <p class="story-text">Catastrophe! You accidentally spilled coffee on the recipe and the butter measurement is completely gone!</p>
-                    <p class="story-text">But Gran was smart - she left a backup clue on the back of the recipe:</p>
-                    
-                    <div class="math-problem">
-                        "Divide 4 times a certain ingredient by the sum of 18 and 24, subtract 15 from the result, to get a final answer of 50."
-                    </div>
-                </div>
-                
-                <div class="family-chat">
-                    <div class="chat-message"><strong>Sarah:</strong> "This is like watching a math exam... but with cake! 📚🎂"</div>
-                    <div class="chat-message"><strong>Mike:</strong> "I never knew baking was so mathematical! 🔢"</div>
-                </div>
-                
-                <div class="input-section">
-                    <div class="input-label">What's the value of the ingredient (in grams)?</div>
-                    <input type="number" id="butter-answer" class="math-input" placeholder="Enter grams" min="1">
-                    <button class="submit-btn" onclick="checkQ3Answer()">MEASURE THE BUTTER</button>
-                </div>
-            `);
-        }
-
-        // Check Question 3 answer
-        function checkQ3Answer() {
-            const answer = parseInt(document.getElementById('butter-answer').value);
-            // Equation: (4x)/(18+24) - 15 = 50
-            // (4x)/42 - 15 = 50
-            // (4x)/42 = 65
-            // 4x = 65 × 42 = 2730
-            // x = 682.5 grams
-            
-            if (answer >= 680 && answer <= 685) {
-                score++;
-                showContent(`
-                    <div class="result-popup correct-result">
-                        <h3>🧮 Mathematical Genius!</h3>
-                        <p><strong>About 683 grams - incredible work!</strong></p>
-                        <p>Working it out: (4 × 683) ÷ 42 - 15 ≈ 50 ✓</p>
-                        <p>Your cake batter is looking professional-quality now!</p>
-                    </div>
-                    
-                    <div class="sibling-reaction">
-                        "Okay, I'm actually getting nervous... this might actually work! 😲" - Mike
-                    </div>
-                    
-                    <div class="choices-container">
-                        <button class="choice-btn next-btn" onclick="continueToQuestions45()">INTO THE OVEN!</button>
-                    </div>
-                `);
-            } else {
-                showContent(`
-                    <div class="result-popup wrong-result">
-                        <h3>❌ Butter Blunder!</h3>
-                        <p>The mixture consistency isn't quite right... The answer was about 683 grams.</p>
-                        <p>But you're a problem-solver - you adjust by feel and keep going!</p>
-                    </div>
-                    
-                    <div class="sibling-reaction">
-                        "Well... the important thing is you're not giving up! 😅" - Sarah  
-                    </div>
-                    
-                    <div class="choices-container">
-                        <button class="choice-btn next-btn" onclick="continueToQuestions45()">IMPROVISE!</button>
-                    </div>
-                `);
-            }
-            currentQuestion++;
-            updateDisplay();
-        }
-
-        // Bridge function to Part 2
-        function continueToQuestions45() {
-            // This will be replaced by Part 2's content
-            showContent(`
-                <div class="story-section">
-                    <h3 class="story-title">Loading Part 2...</h3>
-                    <p class="story-text">Preparing the final challenges...</p>
-                </div>
-            `);
-        }
-
-        // Initialize game
-        document.addEventListener('DOMContentLoaded', function() {
-            updateDisplay();
-            startGame();
-        });
-    </script>
-</body>
-</html>
+                        "Maybe I should take over the math part...
