@@ -4,7 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mum's Birthday Cake Challenge</title>
-    <!-- Add Google Fonts for better typography -->
     <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700&family=Open+Sans:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * {
@@ -14,17 +13,16 @@
         }
 
         body {
-            font-family: 'Nunito', 'Open Sans', Arial, sans-serif; /* Modern, readable fonts */
+            font-family: 'Nunito', 'Open Sans', Arial, sans-serif;
             background: linear-gradient(135deg, #ffb3e6 0%, #ffe6cc 50%, #fff2e6 100%);
             color: #8b4513;
             min-height: 100vh;
             padding: 10px;
         }
 
-        /* Updated font-family declarations */
         .title, .story-title {
             font-family: 'Nunito', Arial, sans-serif;
-            font-weight: 700; /* Bold for headings */
+            font-weight: 700;
         }
 
         .story-text, .math-problem, .chat-message, .ingredient-item {
@@ -34,10 +32,9 @@
 
         .choice-btn, .submit-btn, .math-input {
             font-family: 'Nunito', Arial, sans-serif;
-            font-weight: 600; /* Semi-bold for buttons */
+            font-weight: 600;
         }
 
-        /* All other CSS remains exactly the same */
         .game-container {
             max-width: 900px;
             margin: 0 auto;
@@ -303,7 +300,6 @@
     </style>
 </head>
 <body>
-    <!-- Rest of your HTML remains exactly the same -->
     <div class="game-container">
         <div class="header">
             <h1 class="title">🎂 Mum's Birthday Cake Challenge 🎂</h1>
@@ -320,7 +316,6 @@
     </div>
 
     <script>
-        // Your JavaScript remains exactly the same
         // Game state variables
         let currentQuestion = 1;
         let score = 0;
@@ -367,6 +362,7 @@
                     <button class="choice-btn next-btn" onclick="showReality()">ENTER THE KITCHEN</button>
                 </div>
             `);
+            updateDisplay();
         }
 
         // Show the reality of the situation
@@ -536,4 +532,33 @@
                     </div>
                     
                     <div class="sibling-reaction">
-                        "Maybe I should take over the math part...
+                        "Maybe I should take over the math part... 🤔" - Mike
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="startQuestion3()">ADJUST AND CONTINUE</button>
+                    </div>
+                `);
+            }
+            currentQuestion++;
+            updateDisplay();
+        }
+
+        // Bridge function to Part 2
+        function continueToQuestions45() {
+            // This will be replaced by Part 2's content
+            showContent(`
+                <div class="story-section">
+                    <h3 class="story-title">Loading Part 2...</h3>
+                    <p class="story-text">Preparing the final challenges...</p>
+                </div>
+            `);
+        }
+
+        // Initialize game when page loads
+        window.onload = function() {
+            startGame();
+        };
+    </script>
+</body>
+</html>
