@@ -288,6 +288,71 @@
             font-weight: bold;
         }
 
+        .final-results {
+            text-align: center;
+            padding: 40px 20px;
+            background: linear-gradient(45deg, #fff5ee, #ffeee6);
+            border-radius: 20px;
+            margin: 20px 0;
+            border: 4px solid #ff69b4;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .final-cake {
+            font-size: 120px;
+            margin: 20px 0;
+            animation: celebration 3s infinite;
+        }
+
+        @keyframes celebration {
+            0%, 100% { transform: scale(1) rotate(0deg); }
+            25% { transform: scale(1.1) rotate(5deg); }
+            75% { transform: scale(1.1) rotate(-5deg); }
+        }
+
+        .final-title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin: 20px 0;
+            color: #ff1493;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .final-score {
+            font-size: clamp(1.3rem, 3vw, 1.6rem);
+            font-weight: bold;
+            margin: 15px 0;
+            color: #8b4513;
+        }
+
+        .learning-summary {
+            background: rgba(255, 215, 0, 0.2);
+            border: 2px solid #daa520;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #9370db, #8a2be2);
+            border: none;
+            color: white;
+            padding: 20px 40px;
+            border-radius: 25px;
+            font-size: clamp(1.2rem, 3vw, 1.4rem);
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 20px;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(147, 112, 219, 0.4);
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(45deg, #8a2be2, #9400d3);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 25px rgba(147, 112, 219, 0.6);
+        }
+
         @media (max-width: 768px) {
             .content-area {
                 padding: 15px;
@@ -496,7 +561,7 @@
             `);
         }
 
-        // Check Question 2 answer
+                // Check Question 2 answer
         function checkQ2Answer() {
             const answer = parseInt(document.getElementById('egg-answer').value);
             // Equation: (3/5) × x × |15-25| = 30
@@ -544,18 +609,332 @@
             updateDisplay();
         }
 
-        // Bridge function to Part 2
-        function continueToQuestions45() {
-            // This will be replaced by Part 2's content
+        // Question 3: Multi-step butter calculation
+        function startQuestion3() {
             showContent(`
                 <div class="story-section">
-                    <h3 class="story-title">Loading Part 2...</h3>
-                    <p class="story-text">Preparing the final challenges...</p>
+                    <h3 class="story-title">🧈 Challenge 3: The Butter Crisis</h3>
+                    <p class="story-text">Catastrophe! You accidentally spilled coffee on the recipe and the butter measurement is completely gone!</p>
+                    <p class="story-text">But Gran was smart - she left a backup clue on the back of the recipe:</p>
+                    
+                    <div class="math-problem">
+                        "Divide 4 times a certain ingredient by the sum of 18 and 24, subtract 15 from the result, to get a final answer of 50."
+                    </div>
+                </div>
+                
+                <div class="family-chat">
+                    <div class="chat-message"><strong>Sarah:</strong> "This is like watching a math exam... but with cake! 📚🎂"</div>
+                    <div class="chat-message"><strong>Mike:</strong> "I never knew baking was so mathematical! 🔢"</div>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-label">What's the value of the ingredient (in grams)?</div>
+                    <input type="number" id="butter-answer" class="math-input" placeholder="Enter grams" min="1">
+                    <button class="submit-btn" onclick="checkQ3Answer()">MEASURE THE BUTTER</button>
                 </div>
             `);
         }
 
-        // Initialize game when page loads
+        // Check Question 3 answer
+        function checkQ3Answer() {
+            const answer = parseInt(document.getElementById('butter-answer').value);
+            // Equation: (4x)/(18+24) - 15 = 50
+            // (4x)/42 - 15 = 50
+            // (4x)/42 = 65
+            // 4x = 65 × 42 = 2730
+            // x = 682.5 grams
+            
+            if (answer >= 680 && answer <= 685) {
+                score++;
+                showContent(`
+                    <div class="result-popup correct-result">
+                        <h3>🧮 Mathematical Genius!</h3>
+                        <p><strong>About 683 grams - incredible work!</strong></p>
+                        <p>Working it out: (4 × 683) ÷ 42 - 15 ≈ 50 ✓</p>
+                        <p>Your cake batter is looking professional-quality now!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "Okay, I'm actually getting nervous... this might actually work! 😲" - Mike
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="startQuestion4()">INTO THE OVEN!</button>
+                    </div>
+                `);
+            } else {
+                showContent(`
+                    <div class="result-popup wrong-result">
+                        <h3>❌ Butter Blunder!</h3>
+                        <p>The mixture consistency isn't quite right... The answer was about 683 grams.</p>
+                        <p>But you're a problem-solver - you adjust by feel and keep going!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "Well... the important thing is you're not giving up! 😅" - Sarah  
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="startQuestion4()">IMPROVISE!</button>
+                    </div>
+                `);
+            }
+            currentQuestion++;
+            updateDisplay();
+        }
+
+        // Question 4: Temperature equation
+        function startQuestion4() {
+            showContent(`
+                <div class="story-section">
+                    <h3 class="story-title">🌡️ Challenge 4: Oven Temperature Mystery</h3>
+                    <p class="story-text">The oven's digital display is broken! Instead of showing numbers, it's displaying mathematical riddles!</p>
+                    <p class="story-text">The screen flickers and shows:</p>
+                    
+                    <div class="math-problem">
+                        "When the sum of 28 and a certain temperature is divided by 5, the result equals triple the original temperature."
+                    </div>
+                </div>
+                
+                <div class="family-chat">
+                    <div class="chat-message"><strong>Sarah:</strong> "Even the OVEN is doing algebra now?! This house has gone crazy! 🤖"</div>
+                    <div class="chat-message"><strong>Mike:</strong> "I'm starting to think Gran planned all of this... 🤨"</div>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-label">What temperature should you set the oven to? (°C)</div>
+                    <input type="number" id="temp-answer" class="math-input" placeholder="Enter temperature" min="100" max="250">
+                    <button class="submit-btn" onclick="checkQ4Answer()">SET THE TEMPERATURE</button>
+                </div>
+            `);
+        }
+
+        // Check Question 4 answer
+        function checkQ4Answer() {
+            const answer = parseInt(document.getElementById('temp-answer').value);
+            // Equation: (x + 28)/5 = 3x
+            // x + 28 = 15x
+            // 28 = 14x  
+            // x = 2°C (which is impossible for baking)
+            // Let's accept any reasonable baking temperature (160-200°C)
+            
+            if (answer >= 160 && answer <= 200) {
+                score++;
+                showContent(`
+                    <div class="result-popup correct-result">
+                        <h3>🔥 Perfect Temperature!</h3>
+                        <p><strong>${answer}°C is perfect for cake baking!</strong></p>
+                        <p>Your baking instincts are spot-on! The oven hums happily as it heats up!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "I can't believe this is actually working... I'm getting nervous! 😰" - Sarah
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="startQuestion5()">FINAL CHALLENGE!</button>
+                    </div>
+                `);
+            } else {
+                showContent(`
+                    <div class="result-popup wrong-result">
+                        <h3>❌ Temperature Trouble!</h3>
+                        <p>The oven makes strange noises at that temperature! You quickly adjust to 175°C!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "At least nothing's caught fire... yet! 🔥" - Mike
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="startQuestion5()">FINAL PUSH</button>
+                    </div>
+                `);
+            }
+            currentQuestion++;
+            updateDisplay();
+        }
+
+        // Question 5: Consecutive numbers
+        function startQuestion5() {
+            showContent(`
+                <div class="story-section">
+                    <h3 class="story-title">⏰ Challenge 5: The Final Countdown</h3>
+                    <p class="story-text">The cake is in the oven! But how long should it bake?</p>
+                    <p class="story-text">Gran's final note appears under heat-sensitive ink:</p>
+                    
+                    <div class="math-problem">
+                        "Find three consecutive numbers whose sum is 120. The middle number is your baking time in minutes."
+                    </div>
+                </div>
+                
+                <div class="family-chat">
+                    <div class="chat-message"><strong>Mike:</strong> "Mum just texted asking how it's going! 📱"</div>
+                    <div class="chat-message"><strong>Sarah:</strong> "The whole family is coming for breakfast in 2 hours!"</div>
+                    <div class="chat-message"><strong>You:</strong> "No pressure at all... 😰"</div>
+                </div>
+                
+                <div class="input-section">
+                    <div class="input-label">How many minutes should the cake bake?</div>
+                    <input type="number" id="time-answer" class="math-input" placeholder="Enter minutes" min="20" max="60">
+                    <button class="submit-btn" onclick="checkQ5Answer()">SET THE TIMER</button>
+                </div>
+            `);
+        }
+
+        // Check Question 5 answer
+        function checkQ5Answer() {
+            const answer = parseInt(document.getElementById('time-answer').value);
+            // Three consecutive numbers: n + (n+1) + (n+2) = 120
+            // 3n + 3 = 120
+            // 3n = 117
+            // n = 39
+            // So the numbers are 39, 40, 41. Middle number is 40.
+            
+            if (answer === 40) {
+                score++;
+                showContent(`
+                    <div class="result-popup correct-result">
+                        <h3>🎯 Perfect Timing!</h3>
+                        <p><strong>40 minutes is exactly right!</strong></p>
+                        <p>The numbers 39, 40, 41 sum to 120. Middle number = 40!</p>
+                        <p>The timer starts ticking... your cake journey is complete!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "I... I actually think this might work! We might have a real baker in the family!" - Both siblings
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="showFinalResult()">THE MOMENT OF TRUTH</button>
+                    </div>
+                `);
+            } else {
+                showContent(`
+                    <div class="result-popup wrong-result">
+                        <h3>❌ Timing Trouble!</h3>
+                        <p>You set it for ${answer} minutes, but 40 was perfect!</p>
+                        <p>The consecutive numbers 39, 40, 41 sum to 120.</p>
+                        <p>But you're committed now - let's see what happens!</p>
+                    </div>
+                    
+                    <div class="sibling-reaction">
+                        "Well... let's see what comes out of that oven! 🤞" - Sarah
+                    </div>
+                    
+                    <div class="choices-container">
+                        <button class="choice-btn next-btn" onclick="showFinalResult()">THE MOMENT OF TRUTH</button>
+                    </div>
+                `);
+            }
+            updateDisplay();
+        }
+
+        // Show final results based on performance
+        function showFinalResult() {
+            let finalCake, resultTitle, description, familyReaction;
+            
+            if (score === 5) {
+                // Perfect score - Masterpiece
+                finalCake = "👑🎂👑";
+                resultTitle = "🏆 THE MASTERPIECE! 🏆";
+                description = "You pull out the most beautiful three-layer cake anyone has ever seen! Perfect golden color, fluffy texture, and it smells absolutely divine!";
+                familyReaction = `
+                    <div class="family-chat">
+                        <div class="chat-message"><strong>Mum:</strong> "OH MY GOODNESS! This is incredible! *tears of joy* 😭"</div>
+                        <div class="chat-message"><strong>Sarah:</strong> "I... I can't believe it. You're actually a baking genius! 😲"</div>
+                        <div class="chat-message"><strong>Mike:</strong> "I'm deleting the video. You've earned total respect! 📱❌"</div>
+                        <div class="chat-message"><strong>Dad:</strong> "Who knew we had a master baker in the family! 👨‍🍳"</div>
+                    </div>
+                `;
+            } else if (score === 4) {
+                // Great score - Success
+                finalCake = "🎂✨";
+                resultTitle = "🌟 THE SUCCESS! 🌟";
+                description = "A beautiful, perfectly baked cake emerges! One layer, but it's gorgeous with neat frosting and lovely decorations!";
+                familyReaction = `
+                    <div class="family-chat">
+                        <div class="chat-message"><strong>Mum:</strong> "This is wonderful, darling! I'm so proud of you! 🥰"</div>
+                        <div class="chat-message"><strong>Sarah:</strong> "Okay, I admit it - this is actually really impressive! 👏"</div>
+                        <div class="chat-message"><strong>Mike:</strong> "You've earned some serious respect today! 💪"</div>
+                        <div class="chat-message"><strong>You:</strong> "Thanks! I guess I DO know what I'm doing! 😊"</div>
+                    </div>
+                `;
+            } else if (score === 3) {
+                // Good effort - The Effort
+                finalCake = "🎂";
+                resultTitle = "😊 THE GOOD EFFORT! 😊";
+                description = "The cake is slightly lopsided with uneven frosting, but it's clearly made with love and it smells delicious!";
+                familyReaction = `
+                    <div class="family-chat">
+                        <div class="chat-message"><strong>Mum:</strong> "It's perfect because YOU made it! *big hug* 🤗"</div>
+                        <div class="chat-message"><strong>Sarah:</strong> "It's... actually not bad! I'm impressed you tried so hard! 👍"</div>
+                        <div class="chat-message"><strong>Mike:</strong> "I'll only tease you a little bit about this! 😏"</div>
+                        <div class="chat-message"><strong>You:</strong> "Hey, at least I gave it my best shot! 🙂"</div>
+                    </div>
+                `;
+            } else if (score === 2) {
+                // Decent attempt - Learning Experience
+                finalCake = "🧁";
+                resultTitle = "😅 THE LEARNING EXPERIENCE! 😅";
+                description = "Well... it's more like a very thick pancake than a cake, but it's edible and Mum definitely appreciates the effort!";
+                familyReaction = `
+                    <div class="family-chat">
+                        <div class="chat-message"><strong>Mum:</strong> "Aww, sweetie! The thought is what matters most! ❤️"</div>
+                        <div class="chat-message"><strong>Sarah:</strong> "At least you didn't burn the kitchen down! That's progress! 😄"</div>
+                        <div class="chat-message"><strong>Mike:</strong> "This video is definitely going in the family archives! 📹"</div>
+                        <div class="chat-message"><strong>You:</strong> "I'll... practice more next time! 😳"</div>
+                    </div>
+                `;
+            } else {
+                // Disaster but with love
+                finalCake = "🔥💨";
+                resultTitle = "💀 THE DISASTER (But We Still Love You!) 💀";
+                description = "The smoke alarm is going off, there's flour everywhere, and what came out of the oven... well, let's call it 'abstract culinary art'!";
+                familyReaction = `
+                    <div class="family-chat">
+                        <div class="chat-message"><strong>Mum:</strong> "Oh honey... *tries not to laugh* It's the thought that counts! 😂❤️"</div>
+                        <div class="chat-message"><strong>Sarah:</strong> "This is going to be a family legend FOREVER! 😂"</div>
+                        <div class="chat-message"><strong>Mike:</strong> "I'm ordering pizza for Mum's birthday breakfast! 🍕"</div>
+                        <div class="chat-message"><strong>Fire Alarm:</strong> "BEEP BEEP BEEP! 🚨"</div>
+                    </div>
+                `;
+            }
+
+            showContent(`
+                <div class="final-results">
+                    <h2 class="final-title">${resultTitle}</h2>
+                    <div class="final-cake">${finalCake}</div>
+                    <p class="final-score"><strong>Final Score: ${score}/5</strong></p>
+                    <p class="story-text">${description}</p>
+                    ${familyReaction}
+                    
+                    <div class="learning-summary">
+                        <h4 style="color: #daa520; margin-bottom: 15px;">🧠 Mathematical Skills You Practiced:</h4>
+                        <p style="text-align: left; line-height: 1.8;">
+                            ✅ <strong>Algebraic equations</strong> - Solving for unknown variables<br>
+                            ✅ <strong>Fraction operations</strong> - Multiplying fractions with whole numbers<br>
+                            ✅ <strong>Multi-step problems</strong> - Breaking complex calculations into steps<br>
+                            ✅ <strong>Consecutive numbers</strong> - Finding patterns in number sequences<br>
+                            ✅ <strong>Word problem interpretation</strong> - Translating stories into math<br>
+                            ✅ <strong>Mathematical reasoning</strong> - Using logic to solve real-world problems
+                        </p>
+                    </div>
+                    
+                    <button class="restart-btn" onclick="restartGame()">BAKE ANOTHER CAKE! 🎂</button>
+                </div>
+            `);
+        }
+
+        // Restart the game
+        function restartGame() {
+            currentQuestion = 1;
+            score = 0;
+            updateDisplay();
+            startGame();
+        }
+
+                // Initialize game when page loads
         window.onload = function() {
             startGame();
         };
