@@ -147,7 +147,8 @@
             transform: translateY(-3px);
             box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
         }
-      warning {
+
+        .warning {
             background: rgba(255, 71, 87, 0.2);
             border: 2px solid #ff4757;
             color: #ff4757;
@@ -353,8 +354,7 @@
             showContent(`
                 <div class="victory">
                     <h3>🎉 ESCAPE SUCCESSFUL! 🎉</h3>
-
-                         <p>You escaped the building with ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2, '0')} remaining!</p>
+                    <p>You escaped the building with ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2, '0')} remaining!</p>
                     <p>Your classmates cheer as you emerge from the building!</p>
                     <button class="restart-btn" onclick="restartGame()">PLAY AGAIN</button>
                 </div>
@@ -376,7 +376,8 @@
             showContent(`
                 <div class="story-content">
                     <h3>GHC Excursion</h3>
-                    <p>You are in the bathroom during GHC's excursion to an AI company in Ibadan. Suddenly you hear the loud emergency siren screaming everywhere.</p>
+                    <p>You are in the bathroom during GHC's excursion to an AI company in Ibadan.</p>
+                    <p>Suddenly you hear the loud emergency siren screaming everywhere.</p>
                 </div>
                 <button class="next-btn" onclick="showBathroom()">Rush out of the bathroom</button>
             `);
@@ -386,7 +387,9 @@
             showContent(`
                 <div class="story-content">
                     <h3>Where is everyone?</h3>
-                    <p>You quickly leave the bathroom to find your classmates or Mr Umolu. None of them is there. It appears everyone has left the fifth floor. Ahead, you see a big screen with some information.</p>
+                    <p>You quickly leave the bathroom to find your classmates or Mr Umolu.</p>
+                    <p>None of them is there. It appears everyone has left the fifth floor.</p>
+                    <p>Ahead, you see a big screen with some information.</p>
                 </div>
                 <button class="next-btn" onclick="showScreen()">Go to the screen</button>
             `);
@@ -402,7 +405,8 @@
                         GET TO SAFETY NOW<br>
                         YOU HAVE 5 MINUTES
                     </div>
-                    <p>You remember what the guide told you: Each floor is a base number. To unlock the door to the stairs, you must convert the displayed code to the base of your floor.</p>
+                    <p>You remember what the guide told you:</p>
+                    <p>Each floor is a base number. To unlock the door to the stairs, you must convert the displayed code to the base of your floor.</p>
                     <div class="warning">
                         EVACUATION CODE: 26<br>
                         ELEVATORS: OFFLINE<br>
@@ -465,7 +469,8 @@
                     <div class="story-content">
                         <h3>Advanced Base-5 Challenge</h3>
                         <p><strong>Door Display:</strong> "SOLVE: (3 × 26 + 17) ÷ 5 - 15, THEN CONVERT RESULT TO BASE-5"</p>
-                        <p><em>First calculate: (3 × 26 + 17) ÷ 5 - 15, then convert the answer to base-5</em></p>
+                        <p><em>First calculate: (3 × 26 + 17) ÷ 5 - 15</em></p>
+                        <p><em>Then convert the answer to base-5</em></p>
                     </div>
                     <div class="input-section">
                         <input type="text" id="floor5hard" placeholder="Enter final answer in base-5" maxlength="8">
@@ -596,8 +601,7 @@
                         <input type="text" id="bot4hard" placeholder="10110 - 11010 (in binary)">
                         <button class="submit-btn" onclick="checkFloor4Hard()">SUBMIT BOTH</button>
                     </div>
-
-                    `);
+                `);
             }
         }
 
@@ -903,59 +907,41 @@
         }
 
         function showFloor1Intro() {
-            updateFloorIndicator(1, 1);
+            updateFloorIndicator(1, 10);
             showContent(`
                 <div class="story-content">
                     <h3>Floor 1 - Final Challenge!</h3>
                     <p>You reach the ground floor! The exit is just ahead!</p>
-                    <p>One final challenge stands between you and freedom!</p>
+                    <p>Two security bots block your path. You must defeat them to escape!</p>
                 </div>
                 <button class="next-btn" onclick="showFloor1()">FACE FINAL CHALLENGE</button>
             `);
         }
 
         function showFloor1() {
-            if (gameMode === 'easy') {
-                showContent(`
-                    <div class="story-content">
-                        <h3>Final Challenge</h3>
-                        <p>Convert 26 to base-1 (unary) to escape!</p>
-                        <p><em>Hint: Base-1 is just tally marks (e.g., 5 = |||||)</em></p>
+            showContent(`
+                <div class="story-content">
+                    <h3>Final Escape Challenge</h3>
+                    <p>The exit door requires a base-10 code.</p>
+                    <p>Two security bots approach with binary numbers:</p>
+                    <div class="bot-display">
+                        Alpha Bot: 11010 (26 in binary)<br>
+                        Beta Bot: 10101 (21 in binary)
                     </div>
-                    <div class="input-section">
-                        <input type="text" id="floor1" placeholder="Enter 26 in unary (e.g., |||||)">
-                        <button class="submit-btn" onclick="checkFloor1()">SUBMIT ANSWER</button>
-                    </div>
-                `);
-            } else {
-                // HARD MODE - Floor 1
-                showContent(`
-                    <div class="story-content">
-                        <h3>Final Advanced Challenge</h3>
-                        <p>Convert (26 × 2 + 10) to base-1 (unary) to escape!</p>
-                    </div>
-                    <div class="input-section">
-                        <input type="text" id="floor1hard" placeholder="Enter answer in unary">
-                        <button class="submit-btn" onclick="checkFloor1Hard()">SUBMIT ANSWER</button>
-                    </div>
-                `);
-            }
+                    <p>Add the two binary numbers together, then convert the sum to base-10.</p>
+                    <p>This will be your final escape code!</p>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="finalCode" placeholder="Enter sum in base-10">
+                    <button class="submit-btn" onclick="checkFinalCode()">SUBMIT ESCAPE CODE</button>
+                </div>
+            `);
         }
 
-        function checkFloor1() {
-            const answer = document.getElementById('floor1').value.trim();
-            if (answer === '||||||||||||||||||||||||||' || answer.length === 26) {
-                victory();
-            } else {
-                loseTime();
-                showFloor1Wrong();
-            }
-        }
-
-        function checkFloor1Hard() {
-            // (26 × 2 + 10) = 52 + 10 = 62
-            const answer = document.getElementById('floor1hard').value.trim();
-            if (answer.length === 62) {
+        function checkFinalCode() {
+            // 11010 (26) + 10101 (21) = 101111 (47)
+            const answer = document.getElementById('finalCode').value.trim();
+            if (answer === '47') {
                 victory();
             } else {
                 loseTime();
@@ -966,36 +952,25 @@
         function showFloor1Wrong() {
             showContent(`
                 <div class="story-content">
-                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <div class="warning">❌ WRONG CODE!</div>
                     <p>You lost 30 seconds! The security system is about to lock down completely!</p>
-                </div>
-                <button class="next-btn" onclick="showFinalBots()">FINAL DEFENSE</button>
-            `);
-        }
-
-        function showFinalBots() {
-            showContent(`
-                <div class="story-content">
-                    <h3>🚨 FINAL SECURITY CHALLENGE 🚨</h3>
+                    <p>The bots regenerate with new numbers:</p>
                     <div class="bot-display">
-                        What is the sum of all digits needed to write<br>
-                        all numbers from 1 to 26 inclusive?
+                        Alpha Bot: 11110 (30 in binary)<br>
+                        Beta Bot: 10011 (19 in binary)
                     </div>
                 </div>
                 <div class="input-section">
-                    <input type="text" id="finalBot" placeholder="Enter the sum">
-                    <button class="submit-btn" onclick="checkFinalBots()">SUBMIT ANSWER</button>
+                    <input type="text" id="finalBot" placeholder="Enter sum in base-10">
+                    <button class="submit-btn" onclick="checkFinalBots()">SUBMIT FINAL ANSWER</button>
                 </div>
             `);
         }
 
         function checkFinalBots() {
-            // Sum of digits from 1-9: 45
-            // Sum of digits from 10-19: 10×1 + 45 = 55
-            // Sum of digits from 20-26: 7×2 + (0+1+2+3+4+5+6) = 14 + 21 = 35
-            // Total: 45 + 55 + 35 = 135
+            // 11110 (30) + 10011 (19) = 110001 (49)
             const answer = document.getElementById('finalBot').value.trim();
-            if (answer === '135') {
+            if (answer === '49') {
                 victory();
             } else {
                 gameOver("The final security system locked you in!");
