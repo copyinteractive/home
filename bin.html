@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NEXUS Building Escape</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Courier New', monospace;
+            background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%);
+            color: #00ff88;
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 10px;
+            min-height: 100vh;
+            position: relative;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border: 2px solid #ff4757;
+            padding: 15px;
+            background: rgba(255, 71, 87, 0.1);
+            border-radius: 10px;
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.3);
+        }
+
+        .title {
+            font-size: clamp(1.5rem, 4vw, 2.5rem);
+            color: #ff4757;
+            text-shadow: 0 0 10px #ff4757;
+            margin-bottom: 10px;
+        }
+
+        .timer {
+            font-size: clamp(1.2rem, 3vw, 1.8rem);
+            color: #ffa502;
+            font-weight: bold;
+            text-shadow: 0 0 10px #ffa502;
+            margin-bottom: 10px;
+        }
+
+        .timer.danger {
+            color: #ff4757;
+            animation: pulse 1s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .floor-indicator {
+            background: rgba(0, 255, 136, 0.2);
+            border: 1px solid #00ff88;
+            padding: 10px;
+            border-radius: 5px;
+            font-size: clamp(1rem, 2.5vw, 1.3rem);
+            margin-bottom: 15px;
+        }
+
+        .story-content {
+            background: rgba(22, 33, 62, 0.8);
+            border: 1px solid #00ff88;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            line-height: 1.4;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+        }
+
+        .story-content h3 {
+            color: #ffa502;
+            margin-bottom: 10px;
+            text-align: center;
+            font-size: clamp(1.2rem, 3vw, 1.5rem);
+        }
+
+        .choices {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+
+        .choice-btn, .next-btn {
+            background: linear-gradient(45deg, #2c5282, #3182ce);
+            border: 2px solid #00ff88;
+            color: #ffffff;
+            padding: 12px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .choice-btn:hover, .next-btn:hover {
+            background: linear-gradient(45deg, #3182ce, #4299e1);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+            transform: translateY(-2px);
+        }
+
+        .next-btn {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            margin-top: 10px;
+        }
+
+        .difficulty-btn {
+            background: linear-gradient(45deg, #9b59b6, #8e44ad);
+            border: 2px solid #e74c3c;
+            color: white;
+            padding: 15px 25px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-size: clamp(1.1rem, 2.8vw, 1.3rem);
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            text-align: center;
+            margin: 10px 0;
+        }
+
+        .difficulty-btn.easy {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            border-color: #00ff88;
+        }
+
+        .difficulty-btn.hard {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border-color: #ff4757;
+        }
+
+        .difficulty-btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+        }
+      warning {
+            background: rgba(255, 71, 87, 0.2);
+            border: 2px solid #ff4757;
+            color: #ff4757;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            animation: flash 2s infinite;
+            text-align: center;
+            font-weight: bold;
+        }
+
+        @keyframes flash {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.7; }
+        }
+
+        .bot-display {
+            background: rgba(255, 165, 2, 0.1);
+            border: 1px solid #ffa502;
+            padding: 10px;
+            border-radius: 8px;
+            margin: 10px 0;
+            font-family: monospace;
+            text-align: center;
+        }
+
+        .input-section {
+            margin: 15px 0;
+            padding: 15px;
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid #00ff88;
+            border-radius: 8px;
+        }
+
+        .input-section input {
+            width: 100%;
+            padding: 12px;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid #00ff88;
+            border-radius: 5px;
+            color: #00ff88;
+            font-family: 'Courier New', monospace;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+
+        .submit-btn {
+            background: linear-gradient(45deg, #27ae60, #2ecc71);
+            border: 2px solid #00ff88;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: clamp(1rem, 2.5vw, 1.1rem);
+            font-family: 'Courier New', monospace;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(45deg, #2ecc71, #27ae60);
+            box-shadow: 0 0 15px rgba(0, 255, 136, 0.5);
+        }
+
+        .game-over, .victory {
+            background: rgba(255, 71, 87, 0.2);
+            border: 3px solid #ff4757;
+            padding: 20px;
+            border-radius: 15px;
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .victory {
+            background: rgba(0, 255, 136, 0.2);
+            border-color: #00ff88;
+        }
+
+        .restart-btn {
+            background: linear-gradient(45deg, #e74c3c, #c0392b);
+            border: 2px solid #ff4757;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: clamp(1rem, 2.5vw, 1.2rem);
+            font-family: 'Courier New', monospace;
+            margin-top: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .restart-btn:hover {
+            background: linear-gradient(45deg, #c0392b, #e74c3c);
+            box-shadow: 0 0 20px rgba(255, 71, 87, 0.5);
+        }
+
+        @media (max-width: 600px) {
+            .container {
+                padding: 5px;
+            }
+            
+            .header {
+                padding: 10px;
+            }
+            
+            .story-content {
+                padding: 12px;
+            }
+        }
+
+        .hidden {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">🚨 NEXUS BUILDING ESCAPE 🚨</h1>
+            <div class="timer" id="timer" style="display: none;">TIME: 5:00</div>
+            <div class="floor-indicator" id="floor-indicator" style="display: none;">FLOOR 5</div>
+        </div>
+
+        <div id="game-content">
+            <!-- Game content will be inserted here -->
+        </div>
+    </div>
+
+    <script>
+        let timeLeft = 300;
+        let gameRunning = false;
+        let timerInterval;
+        let gameMode = 'easy'; // 'easy' or 'hard'
+        let timerStarted = false;
+
+        function startTimer() {
+            if (!timerStarted) {
+                timerStarted = true;
+                gameRunning = true;
+                document.getElementById('timer').style.display = 'block';
+                document.getElementById('floor-indicator').style.display = 'block';
+                
+                timerInterval = setInterval(() => {
+                    if (!gameRunning) return;
+                    
+                    timeLeft--;
+                    updateTimerDisplay();
+                    
+                    if (timeLeft <= 0) {
+                        gameOver("⏰ Time's up! The security system captured you!");
+                    }
+                }, 1000);
+            }
+        }
+
+        function updateTimerDisplay() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerElement = document.getElementById('timer');
+            timerElement.textContent = `TIME: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            
+            if (timeLeft <= 60) {
+                timerElement.classList.add('danger');
+            }
+        }
+
+        function updateFloorIndicator(floor, base) {
+            const indicator = document.getElementById('floor-indicator');
+            if (gameMode === 'easy') {
+                indicator.textContent = `FLOOR ${floor} - BASE ${base}`;
+            } else {
+                indicator.textContent = `FLOOR ${floor} - BASE ${base} (HARD MODE)`;
+            }
+        }
+
+        function showContent(content) {
+            document.getElementById('game-content').innerHTML = content;
+        }
+
+        function loseTime() {
+            timeLeft -= 30; // Only lose 30 seconds for wrong answers
+            if (timeLeft < 0) timeLeft = 0;
+            updateTimerDisplay();
+        }
+
+        function gameOver(message) {
+            gameRunning = false;
+            clearInterval(timerInterval);
+            showContent(`
+                <div class="game-over">
+                    <h3>GAME OVER</h3>
+                    <p>${message}</p>
+                    <p>You reached floor ${6 - Math.floor((300 - timeLeft)/60)}</p>
+                    <button class="restart-btn" onclick="restartGame()">TRY AGAIN</button>
+                </div>
+            `);
+        }
+
+        function victory() {
+            gameRunning = false;
+            clearInterval(timerInterval);
+            showContent(`
+                <div class="victory">
+                    <h3>🎉 ESCAPE SUCCESSFUL! 🎉</h3>
+
+                         <p>You escaped the building with ${Math.floor(timeLeft/60)}:${(timeLeft%60).toString().padStart(2, '0')} remaining!</p>
+                    <p>Your classmates cheer as you emerge from the building!</p>
+                    <button class="restart-btn" onclick="restartGame()">PLAY AGAIN</button>
+                </div>
+            `);
+        }
+
+        function restartGame() {
+            timeLeft = 300;
+            gameRunning = false;
+            timerStarted = false;
+            document.getElementById('timer').classList.remove('danger');
+            document.getElementById('timer').style.display = 'none';
+            document.getElementById('floor-indicator').style.display = 'none';
+            startGame();
+        }
+
+        // Story progression
+        function startGame() {
+            showContent(`
+                <div class="story-content">
+                    <h3>GHC Excursion</h3>
+                    <p>You are in the bathroom during GHC's excursion to an AI company in Ibadan. Suddenly you hear the loud emergency siren screaming everywhere.</p>
+                </div>
+                <button class="next-btn" onclick="showBathroom()">Rush out of the bathroom</button>
+            `);
+        }
+
+        function showBathroom() {
+            showContent(`
+                <div class="story-content">
+                    <h3>Where is everyone?</h3>
+                    <p>You quickly leave the bathroom to find your classmates or Mr Umolu. None of them is there. It appears everyone has left the fifth floor. Ahead, you see a big screen with some information.</p>
+                </div>
+                <button class="next-btn" onclick="showScreen()">Go to the screen</button>
+            `);
+        }
+
+        function showScreen() {
+            showContent(`
+                <div class="story-content">
+                    <p>The big screen displays:</p>
+                    <div class="warning">
+                        SYSTEM ERROR<br>
+                        ROBOTS OUT OF CONTROL<br>
+                        GET TO SAFETY NOW<br>
+                        YOU HAVE 5 MINUTES
+                    </div>
+                    <p>You remember what the guide told you: Each floor is a base number. To unlock the door to the stairs, you must convert the displayed code to the base of your floor.</p>
+                    <div class="warning">
+                        EVACUATION CODE: 26<br>
+                        ELEVATORS: OFFLINE<br>
+                        STAIRS: LOCKED
+                    </div>
+                </div>
+                <button class="next-btn" onclick="chooseDifficulty()">SELECT DIFFICULTY</button>
+            `);
+        }
+
+        function chooseDifficulty() {
+            showContent(`
+                <div class="story-content">
+                    <h3>Choose Your Challenge</h3>
+                    <p>How confident are you with base conversions?</p>
+                </div>
+                <div class="choices">
+                    <button class="difficulty-btn easy" onclick="setDifficulty('easy')">🟢 EASY MODE<br><small>Standard base conversions</small></button>
+                    <button class="difficulty-btn hard" onclick="setDifficulty('hard')">🔴 HARD MODE<br><small>Complex calculations</small></button>
+                </div>
+            `);
+        }
+
+        function setDifficulty(mode) {
+            gameMode = mode;
+            startTimer(); // Timer starts when difficulty is selected
+            showFloor5Intro();
+        }
+
+        function showFloor5Intro() {
+            updateFloorIndicator(5, 5);
+            showContent(`
+                <div class="story-content">
+                    <h3>Floor 5: Escape Begins!</h3>
+                    <p>You're on Floor 5. The door requires base-5 conversion!</p>
+                    <p>Convert <strong>26</strong> to base-5 to unlock the stairs DOWN!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor5()">START CONVERSION</button>
+            `);
+        }
+
+        // EASY MODE - Floor 5
+        function showFloor5() {
+            if (gameMode === 'easy') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>Base-5 Challenge</h3>
+                        <p><strong>Door Display:</strong> "ENTER 26 IN BASE-5"</p>
+                        <p><em>Hint: 26 ÷ 5 = 5 remainder 1, then 5 ÷ 5 = 1 remainder 0</em></p>
+                    </div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="checkFloor5Answer('101')">101</button>
+                        <button class="choice-btn" onclick="checkFloor5Answer('151')">151</button>
+                        <button class="choice-btn" onclick="checkFloor5Answer('201')">201</button>
+                    </div>
+                `);
+            } else {
+                // HARD MODE - Floor 5
+                showContent(`
+                    <div class="story-content">
+                        <h3>Advanced Base-5 Challenge</h3>
+                        <p><strong>Door Display:</strong> "SOLVE: (3 × 26 + 17) ÷ 5 - 15, THEN CONVERT RESULT TO BASE-5"</p>
+                        <p><em>First calculate: (3 × 26 + 17) ÷ 5 - 15, then convert the answer to base-5</em></p>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="floor5hard" placeholder="Enter final answer in base-5" maxlength="8">
+                        <button class="submit-btn" onclick="checkFloor5Hard()">SUBMIT ANSWER</button>
+                    </div>
+                `);
+            }
+        }
+
+        function checkFloor5Answer(answer) {
+            if (answer === '101') {
+                showFloor5Success();
+            } else {
+                loseTime();
+                showFloor5Wrong();
+            }
+        }
+
+        function checkFloor5Hard() {
+            // (3 × 26 + 17) ÷ 5 - 15 = (78 + 17) ÷ 5 - 15 = 95 ÷ 5 - 15 = 19 - 15 = 4
+            // 4 in base-5 = 4
+            const answer = document.getElementById('floor5hard').value.trim();
+            if (answer === '4') {
+                showFloor5Success();
+            } else {
+                loseTime();
+                showFloor5Wrong();
+            }
+        }
+
+        function showFloor5Success() {
+            showContent(`
+                <div class="story-content">
+                    <h3>✅ Correct!</h3>
+                    <p>The door clicks open! You rush down the stairs!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor4Intro()">CONTINUE TO FLOOR 4</button>
+            `);
+        }
+
+        function showFloor5Wrong() {
+            showContent(`
+                <div class="story-content">
+                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <p>You lost 30 seconds! Mechanical footsteps approach...</p>
+                </div>
+                <button class="next-btn" onclick="showBots5()">DEFEND YOURSELF!</button>
+            `);
+        }
+
+        function showBots5() {
+            showContent(`
+                <div class="story-content">
+                    <h3>🤖 Bot Attack!</h3>
+                    <div class="bot-display">
+                        Red Bot: 1010<br>
+                        Blue Bot: 1101<br>
+                        Different colors = SUBTRACT!
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="bot5" placeholder="1101 - 1010 = ?" maxlength="8">
+                    <button class="submit-btn" onclick="checkBots5()">DEFEAT BOTS</button>
+                </div>
+            `);
+        }
+
+        function checkBots5() {
+            const answer = document.getElementById('bot5').value.trim();
+            if (answer === '0011' || answer === '11') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>🎯 Bots Defeated!</h3>
+                        <p>Your remote zaps them! Door unlocks!</p>
+                    </div>
+                    <button class="next-btn" onclick="showFloor4Intro()">TO FLOOR 4</button>
+                `);
+            } else {
+                gameOver("🤖 The bots captured you!");
+            }
+        }
+
+        function showFloor4Intro() {
+            updateFloorIndicator(4, 4);
+            showContent(`
+                <div class="story-content">
+                    <h3>Floor 4</h3>
+                    <p>Base-4 door ahead! You hear more bots approaching!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor4()">FACE THE CHALLENGE</button>
+            `);
+        }
+
+        function showFloor4() {
+            if (gameMode === 'easy') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>Base-4 Challenge</h3>
+                        <p>Door needs: 26 in base-4</p>
+                        <p><em>Hint: 26 ÷ 4 = 6 remainder 2, then 6 ÷ 4 = 1 remainder 2</em></p>
+                        <div class="bot-display">
+                            Green Bot 1: 1100<br>
+                            Green Bot 2: 1001<br>
+                            Same color = ADD!
+                        </div>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="door4" placeholder="26 in base-4">
+                        <input type="text" id="bot4" placeholder="1100 + 1001">
+                        <button class="submit-btn" onclick="checkFloor4()">SUBMIT BOTH</button>
+                    </div>
+                `);
+            } else {
+                // HARD MODE - Floor 4
+                showContent(`
+                    <div class="story-content">
+                        <h3>Advanced Base-4 Challenge</h3>
+                        <p>Door needs: Convert (26² - 650) ÷ 2 to base-4</p>
+                        <div class="bot-display">
+                            Complex Bot Calculation:<br>
+                            Purple Bot: 10110<br>
+                            Yellow Bot: 11010<br>
+                            Different colors = SUBTRACT!
+                        </div>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="door4hard" placeholder="Final answer in base-4">
+                        <input type="text" id="bot4hard" placeholder="10110 - 11010 (in binary)">
+                        <button class="submit-btn" onclick="checkFloor4Hard()">SUBMIT BOTH</button>
+                    </div>
+
+                    `);
+            }
+        }
+
+        function checkFloor4() {
+            const door = document.getElementById('door4').value.trim();
+            const bot = document.getElementById('bot4').value.trim();
+            if (door === '122' && (bot === '10101' || bot === '010101')) {
+                showFloor4Success();
+            } else {
+                loseTime();
+                showFloor4Wrong();
+            }
+        }
+
+        function checkFloor4Hard() {
+            // (26² - 650) ÷ 2 = (676 - 650) ÷ 2 = 26 ÷ 2 = 13
+            // 13 in base-4 = 31
+            const door = document.getElementById('door4hard').value.trim();
+            const bot = document.getElementById('bot4hard').value.trim();
+            if (door === '31' && (bot === '-100' || bot === '100' || bot === '-0100')) {
+                showFloor4Success();
+            } else {
+                loseTime();
+                showFloor4Wrong();
+            }
+        }
+
+        function showFloor4Success() {
+            showContent(`
+                <div class="story-content">
+                    <h3>✅ Correct!</h3>
+                    <p>The door unlocks and you descend to Floor 3!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor3Intro()">CONTINUE TO FLOOR 3</button>
+            `);
+        }
+
+        function showFloor4Wrong() {
+            showContent(`
+                <div class="story-content">
+                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <p>You lost 30 seconds! The bots are getting closer...</p>
+                </div>
+                <button class="next-btn" onclick="showBots4()">DEFEND YOURSELF!</button>
+            `);
+        }
+
+        function showBots4() {
+            showContent(`
+                <div class="story-content">
+                    <h3>🤖 Bot Attack!</h3>
+                    <div class="bot-display">
+                        Floor 4 Security Question:<br>
+                        What is 26 in hexadecimal?
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="bot4" placeholder="Enter hexadecimal value">
+                    <button class="submit-btn" onclick="checkBots4()">DEFEAT BOTS</button>
+                </div>
+            `);
+        }
+
+        function checkBots4() {
+            const answer = document.getElementById('bot4').value.trim().toLowerCase();
+            if (answer === '1a') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>🎯 Bots Defeated!</h3>
+                        <p>Your quick thinking disables them! Door unlocks!</p>
+                    </div>
+                    <button class="next-btn" onclick="showFloor3Intro()">TO FLOOR 3</button>
+                `);
+            } else {
+                gameOver("🤖 The bots overwhelmed you!");
+            }
+        }
+
+        function showFloor3Intro() {
+            updateFloorIndicator(3, 3);
+            showContent(`
+                <div class="story-content">
+                    <h3>Floor 3</h3>
+                    <p>You reach Floor 3. The door panel shows a base-3 challenge.</p>
+                    <p>Convert 26 to base-3 to proceed!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor3()">FACE THE CHALLENGE</button>
+            `);
+        }
+
+        function showFloor3() {
+            if (gameMode === 'easy') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>Base-3 Challenge</h3>
+                        <p>Door needs: 26 in base-3</p>
+                        <p><em>Hint: 26 ÷ 3 = 8 remainder 2, then 8 ÷ 3 = 2 remainder 2</em></p>
+                    </div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="checkFloor3Answer('222')">222</button>
+                        <button class="choice-btn" onclick="checkFloor3Answer('202')">202</button>
+                        <button class="choice-btn" onclick="checkFloor3Answer('212')">212</button>
+                    </div>
+                `);
+            } else {
+                // HARD MODE - Floor 3
+                showContent(`
+                    <div class="story-content">
+                        <h3>Advanced Base-3 Challenge</h3>
+                        <p>Door needs: Convert (26 × 3 + 10) ÷ 4 to base-3</p>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="floor3hard" placeholder="Final answer in base-3">
+                        <button class="submit-btn" onclick="checkFloor3Hard()">SUBMIT ANSWER</button>
+                    </div>
+                `);
+            }
+        }
+
+        function checkFloor3Answer(answer) {
+            if (answer === '222') {
+                showFloor3Success();
+            } else {
+                loseTime();
+                showFloor3Wrong();
+            }
+        }
+
+        function checkFloor3Hard() {
+            // (26 × 3 + 10) ÷ 4 = (78 + 10) ÷ 4 = 88 ÷ 4 = 22
+            // 22 in base-3: 22 ÷ 3 = 7 remainder 1, 7 ÷ 3 = 2 remainder 1 → 211
+            const answer = document.getElementById('floor3hard').value.trim();
+            if (answer === '211') {
+                showFloor3Success();
+            } else {
+                loseTime();
+                showFloor3Wrong();
+            }
+        }
+
+        function showFloor3Success() {
+            showContent(`
+                <div class="story-content">
+                    <h3>✅ Correct!</h3>
+                    <p>The door unlocks! You descend to Floor 2!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor2Intro()">CONTINUE TO FLOOR 2</button>
+            `);
+        }
+
+        function showFloor3Wrong() {
+            showContent(`
+                <div class="story-content">
+                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <p>You lost 30 seconds! The security system activates...</p>
+                </div>
+                <button class="next-btn" onclick="showBots3()">DEFEND YOURSELF!</button>
+            `);
+        }
+
+        function showBots3() {
+            showContent(`
+                <div class="story-content">
+                    <h3>🤖 Bot Attack!</h3>
+                    <div class="bot-display">
+                        Floor 3 Security Question:<br>
+                        What is the binary representation of 26?
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="bot3" placeholder="Enter binary value">
+                    <button class="submit-btn" onclick="checkBots3()">DEFEAT BOTS</button>
+                </div>
+            `);
+        }
+
+        function checkBots3() {
+            const answer = document.getElementById('bot3').value.trim();
+            if (answer === '11010') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>🎯 Bots Defeated!</h3>
+                        <p>Your quick thinking disables them! Door unlocks!</p>
+                    </div>
+                    <button class="next-btn" onclick="showFloor2Intro()">TO FLOOR 2</button>
+                `);
+            } else {
+                gameOver("🤖 The bots overwhelmed you!");
+            }
+        }
+
+        function showFloor2Intro() {
+            updateFloorIndicator(2, 2);
+            showContent(`
+                <div class="story-content">
+                    <h3>Floor 2</h3>
+                    <p>You reach Floor 2. The door panel shows a base-2 challenge.</p>
+                    <p>Convert 26 to binary to proceed!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor2()">FACE THE CHALLENGE</button>
+            `);
+        }
+
+        function showFloor2() {
+            if (gameMode === 'easy') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>Binary Challenge</h3>
+                        <p>Door needs: 26 in binary</p>
+                        <p><em>Hint: 26 = 16 + 8 + 2 → 11010</em></p>
+                    </div>
+                    <div class="choices">
+                        <button class="choice-btn" onclick="checkFloor2Answer('11010')">11010</button>
+                        <button class="choice-btn" onclick="checkFloor2Answer('10110')">10110</button>
+                        <button class="choice-btn" onclick="checkFloor2Answer('11100')">11100</button>
+                    </div>
+                `);
+            } else {
+                // HARD MODE - Floor 2
+                showContent(`
+                    <div class="story-content">
+                        <h3>Advanced Binary Challenge</h3>
+                        <p>Door needs: Binary representation of (26 × 5 - 100)</p>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="floor2hard" placeholder="Enter binary value">
+                        <button class="submit-btn" onclick="checkFloor2Hard()">SUBMIT ANSWER</button>
+                    </div>
+                `);
+            }
+        }
+
+        function checkFloor2Answer(answer) {
+            if (answer === '11010') {
+                showFloor2Success();
+            } else {
+                loseTime();
+                showFloor2Wrong();
+            }
+        }
+
+        function checkFloor2Hard() {
+            // (26 × 5 - 100) = 130 - 100 = 30
+            // 30 in binary: 11110
+            const answer = document.getElementById('floor2hard').value.trim();
+            if (answer === '11110') {
+                showFloor2Success();
+            } else {
+                loseTime();
+                showFloor2Wrong();
+            }
+        }
+
+        function showFloor2Success() {
+            showContent(`
+                <div class="story-content">
+                    <h3>✅ Correct!</h3>
+                    <p>The door unlocks! You descend to the final floor!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor1Intro()">CONTINUE TO FLOOR 1</button>
+            `);
+        }
+
+        function showFloor2Wrong() {
+            showContent(`
+                <div class="story-content">
+                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <p>You lost 30 seconds! Security bots are closing in...</p>
+                </div>
+                <button class="next-btn" onclick="showBots2()">DEFEND YOURSELF!</button>
+            `);
+        }
+
+        function showBots2() {
+            showContent(`
+                <div class="story-content">
+                    <h3>🤖 Final Bot Attack!</h3>
+                    <div class="bot-display">
+                        Final Security Question:<br>
+                        What is 26 in octal (base-8)?
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="bot2" placeholder="Enter octal value">
+                    <button class="submit-btn" onclick="checkBots2()">DEFEAT BOTS</button>
+                </div>
+            `);
+        }
+
+        function checkBots2() {
+            const answer = document.getElementById('bot2').value.trim();
+            if (answer === '32') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>🎯 Bots Defeated!</h3>
+                        <p>Your quick thinking disables them! Door unlocks!</p>
+                    </div>
+                    <button class="next-btn" onclick="showFloor1Intro()">TO FLOOR 1</button>
+                `);
+            } else {
+                gameOver("🤖 The final security bots captured you!");
+            }
+        }
+
+        function showFloor1Intro() {
+            updateFloorIndicator(1, 1);
+            showContent(`
+                <div class="story-content">
+                    <h3>Floor 1 - Final Challenge!</h3>
+                    <p>You reach the ground floor! The exit is just ahead!</p>
+                    <p>One final challenge stands between you and freedom!</p>
+                </div>
+                <button class="next-btn" onclick="showFloor1()">FACE FINAL CHALLENGE</button>
+            `);
+        }
+
+        function showFloor1() {
+            if (gameMode === 'easy') {
+                showContent(`
+                    <div class="story-content">
+                        <h3>Final Challenge</h3>
+                        <p>Convert 26 to base-1 (unary) to escape!</p>
+                        <p><em>Hint: Base-1 is just tally marks (e.g., 5 = |||||)</em></p>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="floor1" placeholder="Enter 26 in unary (e.g., |||||)">
+                        <button class="submit-btn" onclick="checkFloor1()">SUBMIT ANSWER</button>
+                    </div>
+                `);
+            } else {
+                // HARD MODE - Floor 1
+                showContent(`
+                    <div class="story-content">
+                        <h3>Final Advanced Challenge</h3>
+                        <p>Convert (26 × 2 + 10) to base-1 (unary) to escape!</p>
+                    </div>
+                    <div class="input-section">
+                        <input type="text" id="floor1hard" placeholder="Enter answer in unary">
+                        <button class="submit-btn" onclick="checkFloor1Hard()">SUBMIT ANSWER</button>
+                    </div>
+                `);
+            }
+        }
+
+        function checkFloor1() {
+            const answer = document.getElementById('floor1').value.trim();
+            if (answer === '||||||||||||||||||||||||||' || answer.length === 26) {
+                victory();
+            } else {
+                loseTime();
+                showFloor1Wrong();
+            }
+        }
+
+        function checkFloor1Hard() {
+            // (26 × 2 + 10) = 52 + 10 = 62
+            const answer = document.getElementById('floor1hard').value.trim();
+            if (answer.length === 62) {
+                victory();
+            } else {
+                loseTime();
+                showFloor1Wrong();
+            }
+        }
+
+        function showFloor1Wrong() {
+            showContent(`
+                <div class="story-content">
+                    <div class="warning">❌ WRONG! DOOR LOCKED!</div>
+                    <p>You lost 30 seconds! The security system is about to lock down completely!</p>
+                </div>
+                <button class="next-btn" onclick="showFinalBots()">FINAL DEFENSE</button>
+            `);
+        }
+
+        function showFinalBots() {
+            showContent(`
+                <div class="story-content">
+                    <h3>🚨 FINAL SECURITY CHALLENGE 🚨</h3>
+                    <div class="bot-display">
+                        What is the sum of all digits needed to write<br>
+                        all numbers from 1 to 26 inclusive?
+                    </div>
+                </div>
+                <div class="input-section">
+                    <input type="text" id="finalBot" placeholder="Enter the sum">
+                    <button class="submit-btn" onclick="checkFinalBots()">SUBMIT ANSWER</button>
+                </div>
+            `);
+        }
+
+        function checkFinalBots() {
+            // Sum of digits from 1-9: 45
+            // Sum of digits from 10-19: 10×1 + 45 = 55
+            // Sum of digits from 20-26: 7×2 + (0+1+2+3+4+5+6) = 14 + 21 = 35
+            // Total: 45 + 55 + 35 = 135
+            const answer = document.getElementById('finalBot').value.trim();
+            if (answer === '135') {
+                victory();
+            } else {
+                gameOver("The final security system locked you in!");
+            }
+        }
+
+        // Start the game when page loads
+        window.onload = startGame;
+    </script>
+</body>
+</html>
