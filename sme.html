@@ -1,0 +1,337 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1" />
+<title>The Coaching Loop (standalone)</title>
+<style>
+  :root { --fg:#000; --bg:#fff; --accent:#a30000; }
+  html,body { margin:0; padding:0; background:var(--bg); color:var(--fg); font:16px/1.6 system-ui, -apple-system, Segoe UI, Roboto, Inter, Arial, sans-serif; }
+  .wrap { max-width: 720px; margin: 40px auto; padding: 0 20px; }
+  .clock { font-variant-numeric: tabular-nums; letter-spacing:.02em; }
+  h1 { font-size: 1.4rem; margin: 0 0 .5rem; font-weight: 700; }
+  p { margin: .75rem 0; }
+  .links { display:flex; flex-direction:column; gap:.5rem; margin-top:1rem; }
+  .btn { cursor:pointer; display:inline-block; width:100%; padding:.8rem 1rem; border:1px solid #111; background:#fff; color:#111; border-radius:.6rem; text-align:center; text-decoration:none; }
+  .btn:hover { background:#111; color:#fff; }
+  .muted { color:#666; font-style: italic; }
+  .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, "Liberation Mono", monospace; font-style: italic; }
+  .faint { opacity:.65; }
+  .reveal { opacity:0; animation: fadeIn 1.5s .8s forwards; }
+  @keyframes fadeIn { to { opacity:1; } }
+  .field { display:block; width:100%; padding:.7rem .8rem; border:1px solid #bbb; border-radius:.5rem; font:inherit; }
+  .row { display:flex; gap:.5rem; margin:.5rem 0 1rem; }
+  .row > * { flex:1; }
+  .small { font-size:.9rem; }
+  .bullets { padding-left: 1.1rem; }
+  .bullets li { margin:.4rem 0; }
+  .center { text-align:center; }
+  footer { margin-top:2rem; font-size:.85rem; color:#444; }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div id="clock" class="clock faint"></div>
+  <div id="view" aria-live="polite"></div>
+  <footer class="center faint">© The Coaching Loop</footer>
+</div>
+
+<!-- Ambient & SFX (same sources as Twine) -->
+<audio id="ambience" src="https://copyinteractive.github.io/twine-assets/ambient_guitar_loop_compressed.mp3" loop></audio>
+<audio id="steps" src="https://copyinteractive.github.io/twine-assets/footsteps_pacing_compressed.mp3"></audio>
+
+<script>
+/* ---------- tiny engine ---------- */
+const state = {
+  passage: "Start",
+  counters: { Diagnosis2: 0 },
+};
+
+const el = (sel) => document.querySelector(sel);
+const view = el("#view");
+const ambience = el("#ambience");
+const steps = el("#steps");
+
+/* live clock (12h with blinking colon like the Twine CSS implied) */
+(function initClock(){
+  const clockEl = el("#clock");
+  function fmt(){
+    const now = new Date();
+    let h = now.getHours(), m = now.getMinutes();
+    const am = h >= 12 ? "PM" : "AM";
+    h = h % 12; if (h === 0) h = 12;
+    const mm = (m < 10 ? "0" : "") + m;
+    return `${h}<span class="faint">:</span>${mm} ${am}`;
+  }
+  function tick(){ clockEl.innerHTML = fmt(); }
+  tick(); setInterval(tick, 1000);
+})();
+
+/* helpers */
+function timeLine(){
+  const now = new Date();
+  const h = now.getHours();
+  if (h >= 5 && h < 12) {
+    return "You are back at your desk. hoping today's the day things finally change.";
+  } else if (h >= 12 && h < 17) {
+    return "It’s afternoon. That weird time of day when motivation dips… but your work doesn't.";
+  } else {
+    return "Your laptop is open.<br>Your eyes are tired.<br>Another day just rolled by... and there's still nothing to show for it.";
+  }
+}
+
+function go(to){
+  state.passage = to;
+  // one-off SFX triggers akin to the Twine file
+  if (to === "Start") try{ ambience.play().catch(()=>{});}catch{}
+  if (to === "Start2") try{ steps.currentTime = 0; steps.play().catch(()=>{});}catch{}
+  render();
+}
+
+function link(label, to, extraClass=""){
+  return `<button class="btn ${extraClass}" data-goto="${to}">${label}</button>`;
+}
+
+function handleClicks(){
+  view.querySelectorAll("[data-goto]").forEach(btn=>{
+    btn.addEventListener("click", (e)=>{
+      go(btn.getAttribute("data-goto"));
+    });
+  });
+
+  // Contact form actions
+  const mailBtn = view.querySelector("[data-mailto]");
+  if (mailBtn) {
+    mailBtn.addEventListener("click", ()=>{
+      const name = (view.querySelector("#name")?.value || "").trim();
+      const line = (view.querySelector("#line")?.value || "").trim();
+      const subject = encodeURIComponent(`Coaching Loop — ${name||"No name"}`);
+      const body = encodeURIComponent(`${line}\n\n— ${name}`);
+      window.location.href = `mailto:hello@copyinteractive.com?subject=${subject}&body=${body}`;
+    });
+  }
+}
+
+/* ---------- passages (verbatim flow) ---------- */
+const P = {
+  Start(){
+    return `
+      <p>${timeLine()}</p>
+      <p>You tell yourself you're building momentum. But deep down... are you really?</p>
+      <div class="links">
+        ${link("Get away from the desk","Start2")}
+      </div>
+    `;
+  },
+
+  Start2(){
+    return `
+      <p>You get up from the desk. And pace the room for a while... until you lose count.</p>
+      <p>Business isn't moving the way you want. Your goals and your reality are presently worlds apart.</p>
+      <p>But you've come too far to give up on yourself now.</p>
+      <div class="links">
+        ${link("Think deeper","Start2-1")}
+      </div>
+    `;
+  },
+
+  "Start2-1"(){
+    return `
+      <p>What to do... what to do...</p>
+      <p>You turn towards your desk, and your eyes land on your journal.</p>
+      <p>The storehouse of your dreams and goals.</p>
+      <div class="links">
+        ${link("Pick it up","Start2-2")}
+        ${link("Ignore it","Start2-2-1")}
+      </div>
+    `;
+  },
+
+  "Start2-2"(){
+    return `
+      <p>You pick up the journal, and flip through the pages. You stop on your last entry.</p>
+      <p class="mono">"I know I'm good at what I do. But I'm struggling to reach more people."</p>
+      <p class="muted center">You pause. Then close the journal and place it gently on the table.</p>
+      <div class="links">
+        ${link("Why's this not working?","Diagnosis")}
+      </div>
+    `;
+  },
+
+  "Start2-2-1"(){
+    return `
+      <p>You continue pacing.</p>
+      <p>But even though you ignore the journal, your mind recalls the last entry you made.</p>
+      <p>It's still fresh as day in your mind.</p>
+      <p>Emails performing badly...</p>
+      <p>Webinars bombing spectacularly...</p>
+      <p>Social posts not working...</p>
+      <div class="links">
+        ${link("Why are these things not working?","Diagnosis")}
+      </div>
+    `;
+  },
+
+  Diagnosis(){
+    return `
+      <p>You sit back at the desk.<br>Staring into space.</p>
+      <p>It’s not like you don’t know your stuff.<br>Your 1:1 clients already get results.</p>
+      <p>They have glowing remarks about you.</p>
+      <p>But scaling your business to reach more clients...</p>
+      <p>It feels like pushing a boulder uphill.</p>
+      <div class="links">
+        ${link("Think deeper","Diagnosis2")}
+      </div>
+    `;
+  },
+
+  Diagnosis2(){
+    state.counters.Diagnosis2++;
+    const reveal = state.counters.Diagnosis2 >= 4
+      ? `<div class="reveal">${link("Or... maybe you're not doing enough?","Diagnosis3")}</div>` : "";
+    return `
+      <p>What could be the problem here?</p>
+      <p>Maybe it’s your ${link("content","Messaging","small")}…<br>
+         Maybe it’s your ${link("systems","Systems","small")}…<br>
+         Or maybe you’re ${link("targeting the wrong people","Audience","small")}…</p>
+      <p>Truth is…<br>You don’t even know anymore.</p>
+      ${reveal}
+    `;
+  },
+
+  Messaging(){
+    return `
+      <p>Maybe it’s the content...</p>
+      <p>You reread the posts, the emails, the captions. They made sense when you wrote them.</p>
+      <p>But now, they don't seem to say much.</p>
+      <p>No hook. No hit. No real reason for anyone to care.</p>
+      <div class="links">${link("Or is it something else?","Diagnosis2")}</div>
+    `;
+  },
+
+  Systems(){
+    return `
+      <p>Maybe it’s your systems...</p>
+      <p>You picture the funnel. The landing pages. The sequences.</p>
+      <p>It's all there — technically.</p>
+      <p>But it’s scattered. Half-built. Held together with duct tape and hope.</p>
+      <p>Is this the problem?</p>
+      <div class="links">${link("Or is it something else?","Diagnosis2")}</div>
+    `;
+  },
+
+  Audience(){
+    return `
+      <p>Maybe it’s your audience…</p>
+      <p>You scan your followers. Your email list. The webinar signups.</p>
+      <p>Numbers? Sure.</p>
+      <p>But are they the right people? They watch. They scroll. But they don’t engage. They don’t buy.</p>
+      <p>Have I been speaking to the wrong people all along?</p>
+      <div class="links">${link("Or is it something else?","Diagnosis2")}</div>
+    `;
+  },
+
+  Diagnosis3(){
+    return `
+      <p>While you're here thinking, a coach is out there winning clients. Making the money.</p>
+      <p>You glance at your wrist for the time.</p>
+      <p class="clock"></p>
+      <p>Screw this. Thinking is such a waste of time.</p>
+      <div class="links">
+        ${link("Look for a quick fix","QuickFix")}
+      </div>
+    `;
+  },
+
+  QuickFix(){
+    return `
+      <p>You pull out your phone and search for a quick hack.</p>
+      <p>“Best performing hooks 2025”… “Profit tweet swipe”… “Webinar subject lines that convert”.</p>
+      <p>You copy, paste, tweak a little. Fire it off.</p>
+      <p class="muted">And then you wait.</p>
+      <p>Deep down, you know this isn’t the way. But it’s easy. It feels like progress.</p>
+      <p>Will you do this again — or break the loop?</p>
+      <div class="links">
+        ${link("Break the loop","LoopStart")}
+        ${link("Try one more quick fix","LoopStart2")}
+      </div>
+    `;
+  },
+
+  LoopStart(){
+    return `
+      <p>You try to break from the loop.</p>
+      <div class="links">
+        ${link("Keep calm","LoopStart2")}
+      </div>
+    `;
+  },
+
+  LoopStart2(){
+    return `
+      <p>You keep calm and try to evaluate the situation objectively.</p>
+      <p>What’s the right next step?</p>
+      <div class="links">
+        ${link("Slip back into the cycle","LoopStart2-1")}
+        ${link("Consider a different approach","Offer")}
+      </div>
+    `;
+  },
+
+  "LoopStart2-1"(){
+    return `
+      <p>You slip into the same cycle again.</p>
+      <p>Watch a new course. Write another thread. Send another email.</p>
+      <div class="links">
+        ${link("Let's try to break this...","Offer")}
+      </div>
+    `;
+  },
+
+  Offer(){
+    return `
+      <h1>The Coaching Loop</h1>
+      <p>This is a small-group consulting program where we work in a 1:1 style to fix the <em>right</em> bottleneck, in the <em>right</em> order, and build a repeatable path to clients.</p>
+      <p><strong>It runs for ~3 weeks.</strong></p>
+      <p>The Loop is for you if:</p>
+      <ul class="bullets">
+        <li>You already get results with 1:1 clients.</li>
+        <li>You want to reach more people without playing content roulette.</li>
+        <li>You prefer practical work over theory and lectures.</li>
+      </ul>
+      <p>It’s not a course. It’s focused implementation with feedback.</p>
+      <p><strong>Intro price: ~$150 (early cohort).</strong></p>
+      <div class="links">
+        ${link("Talk next steps","ContactPage")}
+      </div>
+      <p class="center small faint">Not ready? ${link("Go back to the beginning","Start")}</p>
+    `;
+  },
+
+  ContactPage(){
+    return `
+      <h1>Talk next steps</h1>
+      <p class="muted">Send a quick note and I’ll reply with details.</p>
+      <div class="row">
+        <input id="name" class="field" placeholder="Your name" />
+        <input id="line" class="field" placeholder="One-liner about your situation" />
+      </div>
+      <div class="links">
+        <button class="btn" data-mailto>Send email to hello@copyinteractive.com</button>
+        <a class="btn" href="tel:+2349139399190">Call: +234 913 939 9190</a>
+        ${link("Back to Start","Start")}
+      </div>
+    `;
+  }
+};
+
+/* render */
+function render(){
+  const tpl = P[state.passage] ? P[state.passage]() : `<p>Missing passage: ${state.passage}</p>`;
+  view.innerHTML = tpl;
+  handleClicks();
+}
+go("Start"); // init
+</script>
+</body>
+  </html>
