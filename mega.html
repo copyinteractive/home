@@ -98,16 +98,17 @@
             background: linear-gradient(45deg, #e74c3c, #45b7d1);
         }
         
-        .flier-placeholder {
-            background: linear-gradient(45deg, #96ceb4, #ffc107);
-            color: #2c3e50;
-            padding: 30px;
+        .flier-image {
+            width: 100%;
+            max-width: 400px;
             border-radius: 15px;
             margin: 20px 0;
-            text-align: center;
-            font-weight: 600;
-            font-size: 1.2em;
-            box-shadow: 0 10px 30px rgba(150, 206, 180, 0.3);
+            box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+            transition: transform 0.3s ease;
+        }
+        
+        .flier-image:hover {
+            transform: scale(1.02);
         }
         
         .date-highlight {
@@ -127,6 +128,7 @@
             font-size: 1.1em;
             color: #2c3e50;
             margin: 20px 0;
+            text-align: center;
         }
         
         .form-group {
@@ -256,14 +258,8 @@
         <!-- Page 5 -->
         <div class="screen" id="page5">
             <p class="text-content">Right here:</p>
-            <div class="flier-placeholder">
-                MEGAJAM 2025
-                <br>
-                [Program Flier Placeholder]
-                <br>
-                September 6, 2025
-                <br>
-                Covenant Cathedral
+            <div class="centered-text">
+                <img src="https://copyinteractive.github.io/twine-assets/mega.jpg" alt="MEGAJAM 2025 Event Flier" class="flier-image">
             </div>
             <p class="text-content">Time to hear a sound from heaven.</p>
             <p class="text-content">And experience God's joy all the days of your life.</p>
@@ -275,7 +271,7 @@
         <!-- Page 6 -->
         <div class="screen" id="page6">
             <p class="text-content">Save the date.</p>
-            <p class="text-content"><span class="date-highlight">6 September, 2025</span></p>
+            <p class="text-content">6 September, 2025</p>
             <p class="countdown-display" id="countdown-display">Loading countdown...</p>
             <p class="text-content">Clear out your schedule</p>
             <p class="text-content">And make sure you're at the Covenant Cathedral.</p>
@@ -411,4 +407,4 @@
         }
     </script>
 </body>
-</html>
+    </html>
