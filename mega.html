@@ -59,21 +59,16 @@
             to { opacity: 1; transform: translateY(0); }
         }
         
-        h2 {
-            color: #2c3e50;
-            margin-bottom: 30px;
-            line-height: 1.3;
-            font-size: 1.8em;
-            font-weight: 600;
-            text-align: center;
-        }
-        
         .text-content {
             font-size: 1.1em;
             color: #2c3e50;
             line-height: 1.6;
             margin: 25px 0;
             text-align: left;
+        }
+        
+        .text-content:first-child {
+            margin-top: 0;
         }
         
         .centered-text {
@@ -101,6 +96,62 @@
             transform: translateY(-3px);
             box-shadow: 0 15px 35px rgba(255, 107, 107, 0.5);
             background: linear-gradient(45deg, #e74c3c, #45b7d1);
+        }
+        
+        .flier-placeholder {
+            background: linear-gradient(45deg, #96ceb4, #ffc107);
+            color: #2c3e50;
+            padding: 30px;
+            border-radius: 15px;
+            margin: 20px 0;
+            text-align: center;
+            font-weight: 600;
+            font-size: 1.2em;
+            box-shadow: 0 10px 30px rgba(150, 206, 180, 0.3);
+        }
+        
+        .date-highlight {
+            background: linear-gradient(45deg, #e74c3c, #f39c12);
+            color: white;
+            padding: 15px 25px;
+            border-radius: 25px;
+            display: inline-block;
+            margin: 15px 0;
+            font-weight: 700;
+            box-shadow: 0 5px 15px rgba(231, 76, 60, 0.3);
+        }
+        
+        .countdown-display {
+            font-family: 'Courier New', monospace;
+            font-weight: bold;
+            font-size: 1.1em;
+            color: #2c3e50;
+            margin: 20px 0;
+        }
+        
+        .form-group {
+            margin: 20px 0;
+        }
+        
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+        
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-size: 1em;
+            transition: border-color 0.3s ease;
+        }
+        
+        .form-group input:focus {
+            outline: none;
+            border-color: #4ecdc4;
         }
         
         .floating-elements {
@@ -156,22 +207,117 @@
     </div>
 
     <div class="container">
-        <!-- Main Screen -->
-        <div class="screen active" id="main">
+        <!-- Page 1 -->
+        <div class="screen active" id="page1">
             <p class="text-content" id="greeting">Hi John</p>
             <p class="text-content" id="sender-line">It's Segun</p>
-            <p class="text-content">Something is seriously wrong with us. And I think you know all about it.</p>
-            <p class="text-content">Can we talk now?</p>
-            <br>
+            <p class="text-content">Something is seriously wrong with us.</p>
+            <p class="text-content">And I think you can feel it too.</p>
+            <p class="text-content">Can we talk about it?</p>
             <div class="centered-text">
-                <button class="big-btn" onclick="showNextScreen()">What's that?</button>
+                <button class="big-btn" onclick="showScreen('page2')">can we talk?</button>
             </div>
         </div>
 
-        <!-- Next Screen -->
-        <div class="screen" id="next">
-            <p class="text-content">This is where your next content goes</p>
-            <p class="text-content">Continue building your story from here...</p>
+        <!-- Page 2 -->
+        <div class="screen" id="page2">
+            <p class="text-content">Everywhere you look, youths are searching.</p>
+            <p class="text-content" style="margin: 5px 0;">For money</p>
+            <p class="text-content" style="margin: 5px 0;">For fame</p>
+            <p class="text-content" style="margin: 5px 0;">For escape</p>
+            <p class="text-content">And in the process, we've lost something far greater.</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page3')">what's that?</button>
+            </div>
+        </div>
+
+        <!-- Page 3 -->
+        <div class="screen" id="page3">
+            <p class="text-content">Our connection to God.</p>
+            <p class="text-content">In our pursuit of a better life, we run from Him.</p>
+            <p class="text-content">Instead of running to Him.</p>
+            <p class="text-content">And now, emptiness fills the spaces only He can occupy.</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page4')">I feel that…</button>
+            </div>
+        </div>
+
+        <!-- Page 4 -->
+        <div class="screen" id="page4">
+            <p class="text-content">But He has not abandoned us.</p>
+            <p class="text-content">He is still calling. Still reaching.</p>
+            <p class="text-content">Even now, He's extending an invitation to you</p>
+            <p class="text-content">A chance to finally get it right.</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page5')">what's that?</button>
+            </div>
+        </div>
+
+        <!-- Page 5 -->
+        <div class="screen" id="page5">
+            <p class="text-content">Right here:</p>
+            <div class="flier-placeholder">
+                MEGAJAM 2025
+                <br>
+                [Program Flier Placeholder]
+                <br>
+                September 6, 2025
+                <br>
+                Covenant Cathedral
+            </div>
+            <p class="text-content">Time to hear a sound from heaven.</p>
+            <p class="text-content">And experience God's joy all the days of your life.</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page6')">what do I do?</button>
+            </div>
+        </div>
+
+        <!-- Page 6 -->
+        <div class="screen" id="page6">
+            <p class="text-content">Save the date.</p>
+            <p class="text-content"><span class="date-highlight">6 September, 2025</span></p>
+            <p class="countdown-display" id="countdown-display">Loading countdown...</p>
+            <p class="text-content">Clear out your schedule</p>
+            <p class="text-content">And make sure you're at the Covenant Cathedral.</p>
+            <p class="text-content">There's one more thing you can do...</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page7')">what's that?</button>
+            </div>
+        </div>
+
+        <!-- Page 7 -->
+        <div class="screen" id="page7">
+            <p class="text-content">Share this with a friend. Or two friends. Or 5.</p>
+            <p class="text-content"><strong>DON'T SEND A GROUP.</strong></p>
+            <p class="text-content">This is a personal invitation. Make it special.</p>
+            <p class="text-content">Ready to do that?</p>
+            <div class="centered-text">
+                <button class="big-btn" onclick="showScreen('page8')">all right</button>
+            </div>
+        </div>
+
+        <!-- Page 8 -->
+        <div class="screen" id="page8">
+            <p class="text-content">That's awesome.</p>
+            <p class="text-content">Simply provide these details:</p>
+            
+            <div class="form-group">
+                <label for="senderName">Your first name:</label>
+                <input type="text" id="senderName" placeholder="Enter your name">
+            </div>
+            
+            <div class="form-group">
+                <label for="receiverName">Your friend's name:</label>
+                <input type="text" id="receiverName" placeholder="Enter their name">
+            </div>
+            
+            <p class="text-content">And that's it!</p>
+            
+            <div class="centered-text">
+                <button class="big-btn" onclick="generateLink()">copy link to send to your friend</button>
+            </div>
+            
+            <p class="text-content centered-text">I look forward to seeing you there!</p>
         </div>
     </div>
 
@@ -186,22 +332,82 @@
             const greeting = document.getElementById('greeting');
             const senderLine = document.getElementById('sender-line');
             
-            if (receiverName) {
+            // Check if we have receiver name from URL
+            if (receiverName && senderName) {
                 greeting.textContent = `Hi ${receiverName}`;
-            } else {
-                greeting.textContent = 'Hi John';
-            }
-            
-            if (senderName) {
                 senderLine.textContent = `It's ${senderName}`;
             } else {
-                senderLine.textContent = 'It\'s Segun';
+                // Default for raw link without name tags
+                greeting.textContent = 'Hi there';
+                senderLine.textContent = 'Glad to meet you';
+            }
+            
+            // Calculate and display countdown (only initial load)
+            if (document.getElementById('page6').classList.contains('active')) {
+                updateCountdown();
             }
         });
 
-        function showNextScreen() {
-            document.getElementById('main').classList.remove('active');
-            document.getElementById('next').classList.add('active');
+        function showScreen(screenId) {
+            // Hide all screens
+            const screens = document.querySelectorAll('.screen');
+            screens.forEach(screen => {
+                screen.classList.remove('active');
+            });
+            
+            // Show the selected screen
+            const targetScreen = document.getElementById(screenId);
+            if (targetScreen) {
+                targetScreen.classList.add('active');
+                window.scrollTo(0, 0);
+            }
+        }
+
+        function updateCountdown() {
+            const targetDate = new Date('September 6, 2025 00:00:00').getTime();
+            const now = new Date().getTime();
+            const timeLeft = targetDate - now;
+            
+            const days = Math.floor(timeLeft / (1000 * 60 * 60 * 24));
+            const hours = Math.floor((timeLeft % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60));
+            const minutes = Math.floor((timeLeft % (1000 * 60 * 60)) / (1000 * 60));
+            const seconds = Math.floor((timeLeft % (1000 * 60)) / 1000);
+            
+            const countdownElement = document.getElementById('countdown-display');
+            if (countdownElement) {
+                countdownElement.textContent = `${days} days ${hours} hrs ${minutes} mins ${seconds} secs`;
+            }
+        }
+
+        // Update countdown every second (but only if we're on page 6)
+        setInterval(function() {
+            if (document.getElementById('page6').classList.contains('active')) {
+                updateCountdown();
+            }
+        }, 1000);
+
+        function generateLink() {
+            const sender = document.getElementById('senderName').value.trim();
+            const receiver = document.getElementById('receiverName').value.trim();
+            
+            if (!sender || !receiver) {
+                alert('Please fill in both names!');
+                return;
+            }
+            
+            // Get current URL without parameters
+            const baseUrl = window.location.href.split('?')[0];
+            
+            // Create new URL with parameters
+            const newUrl = `${baseUrl}?sender=${encodeURIComponent(sender)}&to=${encodeURIComponent(receiver)}`;
+            
+            // Copy to clipboard
+            navigator.clipboard.writeText(newUrl).then(function() {
+                alert(`Link copied! Send this to ${receiver}:\n\n${newUrl}`);
+            }).catch(function() {
+                // Fallback if clipboard API doesn't work
+                prompt('Copy this link:', newUrl);
+            });
         }
     </script>
 </body>
