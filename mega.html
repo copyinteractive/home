@@ -201,6 +201,18 @@
     </style>
 </head>
 <body>
+    <audio id="bg-music" autoplay loop hidden>
+  <source src="https://copyinteractive.github.io/twine-assets/burn.mp3" type="audio/mp3">
+</audio>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function() {
+    const bgMusic = document.getElementById("bg-music");
+    if (bgMusic) {
+      bgMusic.volume = 0.7; // 70% volume
+    }
+  });
+</script>
     <div class="floating-elements">
         <div class="floating-element" style="top: 10%; left: 10%; width: 80px; height: 80px; animation-delay: 0s;"></div>
         <div class="floating-element" style="top: 20%; right: 10%; width: 120px; height: 120px; animation-delay: 2s;"></div>
