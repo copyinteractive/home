@@ -1,101 +1,407 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id=G-7MCXMFE92D"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-7MCXMFE92D');
-  </script> 
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Glorious Schools Games</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
     body {
-      font-family: 'Segoe UI', sans-serif;
+      background: linear-gradient(135deg, #6a11cb 0%, #2575fc 100%);
+      color: white;
+      min-height: 100vh;
+      overflow-x: hidden;
+    }
+
+    .container {
+      max-width: 1200px;
       margin: 0 auto;
       padding: 2rem;
-      background: #F0FBF8; /* soft minty green/blue tone */
-      color: #333;
-      max-width: 700px;
     }
 
     header {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
       text-align: center;
-      margin-bottom: 1.5rem;
+      padding: 2rem 0;
+      position: relative;
     }
 
-    img.logo {
-      width: 64px;
-      height: 64px;
+    .logo-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+
+    .logo {
+      width: 100px;
+      height: 100px;
+      background: linear-gradient(135deg, #FFD700, #FFA500);
       border-radius: 50%;
-      margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+      animation: pulse 2s infinite;
+    }
+
+    .logo i {
+      font-size: 3rem;
+      color: #6a11cb;
     }
 
     h1 {
-      font-size: 1.65rem;
-      margin: 0.25rem 0 0.5rem;
-      color: #009966; /* green tone */
-      text-align: center;
+      font-size: 3.5rem;
+      margin-bottom: 1rem;
+      text-shadow: 3px 3px 0 rgba(0, 0, 0, 0.2);
+      background: linear-gradient(to right, #FFD700, #FFA500, #FF6347);
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      letter-spacing: 2px;
     }
 
-    p.subheading {
-      text-align: center;
-      font-size: 1.1rem;
-      color: #444;
+    .subheading {
+      font-size: 1.5rem;
       margin-bottom: 2rem;
+      color: #FFD700;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
     }
 
-    .link-button {
+    .games-container {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+      gap: 2rem;
+      margin: 3rem 0;
+    }
+
+    .game-card {
+      background: rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      border-radius: 20px;
+      padding: 2rem;
+      text-align: center;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .game-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5px;
+      background: linear-gradient(to right, #FFD700, #FFA500, #FF6347);
+    }
+
+    .game-card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-icon {
+      font-size: 4rem;
+      margin-bottom: 1.5rem;
+      color: #FFD700;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+    }
+
+    .game-title {
+      font-size: 1.8rem;
+      margin-bottom: 1rem;
+      color: #FFD700;
+    }
+
+    .game-description {
+      font-size: 1rem;
+      margin-bottom: 1.5rem;
+      color: rgba(255, 255, 255, 0.9);
+      line-height: 1.6;
+    }
+
+    .play-button {
       display: inline-block;
-      padding: 0.75rem 1.5rem;
-      margin: 0.5rem 0.25rem;
-      background: #3366CC; /* vibrant blue tone */
-      color: white;
+      padding: 0.8rem 2rem;
+      background: linear-gradient(to right, #FFD700, #FFA500);
+      color: #6a11cb;
       text-decoration: none;
-      border-radius: 8px;
+      border-radius: 50px;
       font-weight: bold;
-      transition: background 0.3s ease;
+      font-size: 1.1rem;
+      transition: all 0.3s ease;
+      box-shadow: 0 5px 15px rgba(255, 165, 0, 0.4);
+      border: none;
+      cursor: pointer;
     }
 
-    .link-button:hover {
-      background: #254A99;
+    .play-button:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(255, 165, 0, 0.6);
+      color: #4a0da3;
+    }
+
+    .features {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      margin: 4rem 0;
+      gap: 1.5rem;
+    }
+
+    .feature {
+      text-align: center;
+      flex: 1;
+      min-width: 200px;
+      padding: 1.5rem;
+    }
+
+    .feature i {
+      font-size: 2.5rem;
+      color: #FFD700;
+      margin-bottom: 1rem;
+    }
+
+    .feature h3 {
+      font-size: 1.3rem;
+      margin-bottom: 0.5rem;
+      color: #FFD700;
+    }
+
+    .feature p {
+      color: rgba(255, 255, 255, 0.9);
     }
 
     footer {
       text-align: center;
-      font-size: 0.9rem;
-      color: #666;
-      margin-top: 2.5rem;
-      padding: 1rem;
-      background: #E2F4EF; /* lighter variant of green */
-      border-radius: 10px;
+      padding: 2rem;
+      margin-top: 3rem;
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 15px;
+      backdrop-filter: blur(5px);
+    }
+
+    .footer-content {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 1rem;
+    }
+
+    .copyright {
+      font-size: 1.1rem;
+      color: #FFD700;
+    }
+
+    .social-icons {
+      display: flex;
+      gap: 1rem;
+    }
+
+    .social-icons a {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      width: 40px;
+      height: 40px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      color: #FFD700;
+      text-decoration: none;
+      transition: all 0.3s ease;
+    }
+
+    .social-icons a:hover {
+      background: #FFD700;
+      color: #6a11cb;
+      transform: scale(1.1);
+    }
+
+    .floating-elements {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: -1;
+    }
+
+    .floating-element {
+      position: absolute;
+      width: 30px;
+      height: 30px;
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 50%;
+      animation: float 15s infinite linear;
+    }
+
+    @keyframes float {
+      0% {
+        transform: translateY(0) rotate(0deg);
+        opacity: 0;
+      }
+      10% {
+        opacity: 1;
+      }
+      90% {
+        opacity: 1;
+      }
+      100% {
+        transform: translateY(-100vh) rotate(360deg);
+        opacity: 0;
+      }
+    }
+
+    @keyframes pulse {
+      0% {
+        transform: scale(1);
+      }
+      50% {
+        transform: scale(1.05);
+      }
+      100% {
+        transform: scale(1);
+      }
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 768px) {
+      h1 {
+        font-size: 2.5rem;
+      }
+      
+      .games-container {
+        grid-template-columns: 1fr;
+      }
+      
+      .footer-content {
+        flex-direction: column;
+      }
     }
   </style>
 </head>
 <body>
+  <div class="floating-elements" id="floatingElements"></div>
 
-  <header>
-    <img src="https://copyinteractive.github.io/coaching/assets/crcopy.jpg" alt="Glorious Schools logo" class="logo">
-    <h1>Glorious Schools Games</h1>
-  </header>
+  <div class="container">
+    <header>
+      <div class="logo-container">
+        <div class="logo">
+          <i class="fas fa-gamepad"></i>
+        </div>
+      </div>
+      <h1>Glorious Schools Games</h1>
+      <p class="subheading">Maths based games for Year 9 students</p>
+    </header>
 
-  <p class="subheading">Maths based games for Year 9 students</p>
+    <div class="games-container">
+      <div class="game-card">
+        <div class="game-icon">
+          <i class="fas fa-dungeon"></i>
+        </div>
+        <h2 class="game-title">Nexus Escape</h2>
+        <p class="game-description">Solve math puzzles to escape the mysterious Nexus! Use your arithmetic skills to unlock doors and find your way out.</p>
+        <a href="#" class="play-button">Play Now</a>
+      </div>
 
-  <div style="text-align: center;">
-    <a href="#" class="link-button" target="_blank">Nexus Escape</a>
-    <a href="#" class="link-button" target="_blank">The Birthday Cake</a>
-    <a href="#" class="link-button" target="_blank">Chase the Goat</a>
+      <div class="game-card">
+        <div class="game-icon">
+          <i class="fas fa-birthday-cake"></i>
+        </div>
+        <h2 class="game-title">The Birthday Cake</h2>
+        <p class="game-description">Help bake the perfect birthday cake by solving fraction problems! Measure ingredients and divide portions correctly.</p>
+        <a href="#" class="play-button">Play Now</a>
+      </div>
+
+      <div class="game-card">
+        <div class="game-icon">
+          <i class="fas fa-flag-checkered"></i>
+        </div>
+        <h2 class="game-title">Chase the Goat</h2>
+        <p class="game-description">Race against time to catch the runaway goat! Solve geometry problems to navigate through obstacles and win the chase.</p>
+        <a href="#" class="play-button">Play Now</a>
+      </div>
+    </div>
+
+    <div class="features">
+      <div class="feature">
+        <i class="fas fa-brain"></i>
+        <h3>Boost Your Skills</h3>
+        <p>Improve your math abilities while having fun</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-trophy"></i>
+        <h3>Earn Rewards</h3>
+        <p>Collect points and unlock achievements</p>
+      </div>
+      <div class="feature">
+        <i class="fas fa-users"></i>
+        <h3>Compete with Friends</h3>
+        <p>Challenge your classmates to math battles</p>
+      </div>
+    </div>
+
+    <footer>
+      <div class="footer-content">
+        <div class="copyright">© 2025 Glorious Schools, Olosan</div>
+        <div class="social-icons">
+          <a href="#"><i class="fab fa-facebook-f"></i></a>
+          <a href="#"><i class="fab fa-twitter"></i></a>
+          <a href="#"><i class="fab fa-instagram"></i></a>
+          <a href="#"><i class="fab fa-youtube"></i></a>
+        </div>
+      </div>
+    </footer>
   </div>
 
-  <footer>
-    © 2025 Glorious Schools, Olosan
-  </footer>
+  <script>
+    // Create floating elements for background animation
+    const floatingElements = document.getElementById('floatingElements');
+    const colors = ['#FFD700', '#FFA500', '#FF6347', '#6a11cb', '#2575fc'];
+    
+    for (let i = 0; i < 20; i++) {
+      const element = document.createElement('div');
+      element.classList.add('floating-element');
+      
+      // Random properties
+      const size = Math.random() * 30 + 10;
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      const left = Math.random() * 100;
+      const animationDuration = Math.random() * 20 + 10;
+      const animationDelay = Math.random() * 5;
+      
+      element.style.width = `${size}px`;
+      element.style.height = `${size}px`;
+      element.style.background = color;
+      element.style.left = `${left}%`;
+      element.style.animationDuration = `${animationDuration}s`;
+      element.style.animationDelay = `${animationDelay}s`;
+      
+      floatingElements.appendChild(element);
+    }
 
+    // Add hover effect to game cards
+    const gameCards = document.querySelectorAll('.game-card');
+    gameCards.forEach(card => {
+      card.addEventListener('mouseenter', () => {
+        card.style.transform = 'translateY(-10px) scale(1.02)';
+      });
+      
+      card.addEventListener('mouseleave', () => {
+        card.style.transform = 'translateY(0) scale(1)';
+      });
+    });
+  </script>
 </body>
 </html>
