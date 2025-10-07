@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Math Adventures Hub</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    /* Reset */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Poppins', sans-serif;
+      background: linear-gradient(135deg, #e0f7fa, #e8f5e9);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      color: #222;
+    }
+
+    h1 {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    p {
+      margin-bottom: 40px;
+      font-size: 1.1rem;
+      color: #444;
+    }
+
+    .game-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+      gap: 25px;
+      width: 90%;
+      max-width: 900px;
+    }
+
+    .game-card {
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 25px 20px;
+      text-align: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .game-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 15px rgba(0,0,0,0.15);
+    }
+
+    .emoji {
+      font-size: 2.5rem;
+      margin-bottom: 10px;
+    }
+
+    footer {
+      margin-top: 50px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>🎮 Math Adventures Hub</h1>
+  <p>Choose a challenge and start your next math mission!</p>
+
+  <div class="game-grid">
+    <a href="games/goat_chase.html" class="game-card">
+      <div class="emoji">🐐</div>
+      <h3>The Great Goat Chase</h3>
+      <p>Recover your lunch money before time runs out!</p>
+    </a>
+
+    <a href="games/cake_baker.html" class="game-card">
+      <div class="emoji">🎂</div>
+      <h3>The Cake Math Challenge</h3>
+      <p>Measure, mix, and bake your way to math mastery!</p>
+    </a>
+
+    <a href="games/fractions_forest.html" class="game-card">
+      <div class="emoji">🌲</div>
+      <h3>Fractions Forest</h3>
+      <p>Help the explorers find their way by solving fraction puzzles.</p>
+    </a>
+
+    <a href="games/number_bases.html" class="game-card">
+      <div class="emoji">🔢</div>
+      <h3>Binary Wastes</h3>
+      <p>Decode the base systems and restore power to the digital city!</p>
+    </a>
+  </div>
+
+  <footer>
+    © 2025 Math Adventures | Glorious Schools
+  </footer>
+
+</body>
+</html>
