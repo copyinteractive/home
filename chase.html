@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chase the Goat</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: 'Segoe UI', Tahoma, sans-serif;
+            background: linear-gradient(135deg, #87CEEB 0%, #90EE90 100%);
+            min-height: 100vh;
+            padding: 10px;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        .header {
+            background: #4a4a4a;
+            color: white;
+            padding: 20px;
+            text-align: center;
+        }
+        .title {
+            font-size: clamp(1.8rem, 4vw, 2.5rem);
+            margin-bottom: 10px;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        .timer-display {
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .timer-display.warning { color: #FFD700; animation: pulse 1s infinite; }
+        .timer-display.danger { color: #FF4444; }
+        @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.6; } }
+        .chase-bar {
+            background: rgba(255,255,255,0.3);
+            padding: 15px;
+            border-radius: 10px;
+            margin-top: 10px;
+        }
+        .chase-track {
+            position: relative;
+            height: 40px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 20px;
+            overflow: hidden;
+        }
+        .player-icon, .goat-icon {
+            position: absolute;
+            font-size: 30px;
+            transition: left 0.5s ease;
+            top: 5px;
+        }
+        .player-icon { left: 0; transform: scaleX(-1); }
+        .goat-icon { left: 80%; }
+        .streak-display {
+            text-align: center;
+            margin-top: 10px;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+        }
+        .content { padding: 30px; }
+        .story-box {
+            background: linear-gradient(45deg, #FFF5E6, #FFE8CC);
+            border: 3px solid #4a4a4a;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            line-height: 1.8;
+        }
+        .story-box p { margin-bottom: 15px; }
+        .story-title {
+            color: #4a4a4a;
+            font-size: 1.5rem;
+            margin-bottom: 15px;
+            text-align: center;
+            font-family: 'Comic Sans MS', cursive;
+        }
+        .location-badge {
+            display: inline-block;
+            background: #4a90e2;
+            color: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .question-box {
+            background: #FFFACD;
+            border: 3px solid #DAA520;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .formula {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            color: #333;
+        }
+        .instruction {
+            font-size: 1.2rem;
+            color: #666;
+            margin: 10px 0;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            margin-top: 20px;
+        }
+        .option-btn {
+            background: linear-gradient(45deg, #4A90E2, #357ABD);
+            border: none;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 15px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            text-align: left;
+        }
+        .option-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(74,144,226,0.4);
+        }
+        .btn {
+            background: linear-gradient(45deg, #32CD32, #228B22);
+            border: none;
+            color: white;
+            padding: 15px 30px;
+            border-radius: 25px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s;
+            display: block;
+            margin: 20px auto;
+        }
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(50,205,50,0.4);
+        }
+        .narrative {
+            background: linear-gradient(45deg, #E8F5E9, #C8E6C9);
+            border: 2px solid #4CAF50;
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            font-style: italic;
+            line-height: 1.8;
+        }
+        .narrative.wrong {
+            background: linear-gradient(45deg, #FFEBEE, #FFCDD2);
+            border-color: #F44336;
+        }
+        .final-result {
+            text-align: center;
+            padding: 30px;
+            line-height: 1.8;
+        }
+        .final-emoji { font-size: 80px; margin: 20px 0; }
+        .restart {
+            background: linear-gradient(45deg, #9370DB, #8A2BE2);
+        }
+        @media (max-width: 600px) {
+            .content { padding: 15px; }
+            .formula { font-size: 1.2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1 class="title">Chase the Goat</h1>
+            <div class="timer-display" id="timer">Time: 5:00</div>
+            <div class="chase-bar">
+                <div class="chase-track">
+                    <div class="player-icon" id="player">🏃</div>
+                    <div class="goat-icon" id="goat">🐐</div>
+                </div>
+                <div class="streak-display" id="streak">Correct Answers: 0/10</div>
+            </div>
+        </div>
+        <div class="content" id="content"></div>
+    </div>
+
+    <script>
+        let correctAnswers = 0;
+        let wrongAnswers = 0;
+        let currentLocation = 0;
+        let selectedQuestions = [];
+        let usedQuestions = [];
+        let timeLeft = 300;
+        let timerInterval;
+        let gameRunning = false;
+        let cycleCount = 0;
+
+        const locations = [
+            { name: "Assembly Ground", narratives: [
+                "The goat bolts toward the classroom blocks, your money flapping in its mouth!",
+                "The goat takes off again, heading for the buildings!"
+            ]},
+            { name: "SSS 1 Class", narratives: [
+                "It leaps over desks in SSS 1. Charly shouts a warning as it escapes toward the senior block!",
+                "Through SSS 1 again! Students scatter as the goat heads for SSS 3!"
+            ]},
+            { name: "SSS 3 Class", narratives: [
+                "The goat crashes into SSS 3, scrambling between desks toward the hall!",
+                "Ini points the direction as the goat races past. 'It's heading for the hall!'"
+            ]},
+            { name: "School Hall", narratives: [
+                "Hooves echo on concrete as the goat zigzags between chairs. Ore freezes mid-rehearsal as it darts toward the admin block!",
+                "Through the hall again! The goat disappears toward the staff room!"
+            ]},
+            { name: "Staff Room", narratives: [
+                "Mr Abe's tea cup freezes midair as the goat weaves between desks and bolts out the back door!",
+                "The goat dodges under filing cabinets, heading for the tuck shop!"
+            ]},
+            { name: "Tuck Shop", narratives: [
+                "You're SO close to food, but the goat blocks your path! Aunty Michael leans out. 'Catch it and get extra rice!' The goat darts toward JSS 1!",
+                "Aunty Michael laughs. 'Still chasing? I'll keep your food warm!' The goat heads for the junior block!"
+            ]},
+            { name: "JSS 1 Class", narratives: [
+                "Demola and his classmates burst out laughing. 'Senior is chasing a goat!' This is so embarrassing! It prances toward the computer lab!",
+                "Demola's recording again. The goat plays to the camera before dashing to the computer lab!"
+            ]},
+            { name: "Computer Lab", narratives: [
+                "Mr Umolu yells about the equipment as the goat jumps onto keyboards, scrambling toward JSS 2!",
+                "The goat finds a gap through Mr Umolu's blockade and escapes to JSS 2!"
+            ]},
+            { name: "JSS 2 Class", narratives: [
+                "Kolawole announces, 'We're live streaming!' The goat does a little hop for the cameras before leaping through the window!",
+                "Students crowd the windows filming. The goat poses, then jumps toward the farm!"
+            ]},
+            { name: "School Farm", narratives: [
+                "The farm - the goat's home territory! Your last chance before it disappears into the bushes!",
+                "The goat is slowing down, finally tiring. One more push!"
+            ]}
+        ];
+
+        const questions = [
+            { formula: "A = l × w", subject: "w", options: ["w = A × l", "w = A ÷ l", "w = A - l", "w = l ÷ A"], correct: 1 },
+            { formula: "v = d/t", subject: "d", options: ["d = v/t", "d = v × t", "d = t/v", "d = v - t"], correct: 1 },
+            { formula: "P = 2(l + w)", subject: "l", options: ["l = P/2 - w", "l = P - 2w", "l = (P/2) - w", "l = P/2 + w"], correct: 2 },
+            { formula: "F = ma", subject: "a", options: ["a = F × m", "a = m/F", "a = F/m", "a = F - m"], correct: 2 },
+            { formula: "D = m/v", subject: "v", options: ["v = D × m", "v = m/D", "v = D/m", "v = m - D"], correct: 1 },
+            { formula: "C = 2πr", subject: "r", options: ["r = C × 2π", "r = C/(2π)", "r = 2π/C", "r = C - 2π"], correct: 1 },
+            { formula: "v = u + at", subject: "u", options: ["u = v + at", "u = v - at", "u = v/at", "u = at - v"], correct: 1 },
+            { formula: "P = F/A", subject: "A", options: ["A = P × F", "A = P/F", "A = F/P", "A = F - P"], correct: 2 },
+            { formula: "C = pq + d", subject: "p", options: ["p = (C - d)/q", "p = C - d - q", "p = (C + d)/q", "p = C/(q + d)"], correct: 0 },
+            { formula: "E = (1/2)mv²", subject: "m", options: ["m = 2E/v²", "m = Ev²/2", "m = 2Ev²", "m = E/2v²"], correct: 0 },
+            { formula: "I = PRT/100", subject: "T", options: ["T = 100I/PR", "T = IPR/100", "T = 100/IPR", "T = PR/100I"], correct: 0 },
+            { formula: "A = ½bh", subject: "h", options: ["h = 2A/b", "h = Ab/2", "h = 2/Ab", "h = A/2b"], correct: 0 },
+            { formula: "a/b = c/d", subject: "d", options: ["d = bc/a", "d = ac/b", "d = ab/c", "d = c/ab"], correct: 0 },
+            { formula: "P = N + 2/D", subject: "N", options: ["N = P - 2/D", "N = PD - 2", "N = P/D - 2", "N = D(P - 2)"], correct: 0 },
+            { formula: "h = 2d²/25", subject: "d", options: ["d = √(25h/2)", "d = 25h/2", "d = √(2h/25)", "d = 2h/25"], correct: 0 },
+            { formula: "N = √(3h/2)", subject: "h", options: ["h = 2N²/3", "h = 3N²/2", "h = N²/6", "h = 6/N²"], correct: 0 },
+            { formula: "S = 2πr(r + h)", subject: "h", options: ["h = S/(2πr) - r", "h = S - 2πr²", "h = (S - 2πr²)/(2πr)", "h = S/2πr + r"], correct: 0 },
+            { formula: "1/u + 1/v = 2/f", subject: "u", options: ["u = fv/(2v - f)", "u = 2vf/(v - f)", "u = f(2v - f)/v", "u = vf/(v - 2f)"], correct: 0 },
+            { formula: "2√x = a", subject: "x", options: ["x = a²/4", "x = 2a²", "x = a²/2", "x = 4a²"], correct: 0 },
+            { formula: "x = √(y² + z²)", subject: "y", options: ["y = √(x² - z²)", "y = x² - z²", "y = √(x - z)", "y = x - z²"], correct: 0 },
+            { formula: "V = πr²h", subject: "h", options: ["h = V/(πr²)", "h = Vπr²", "h = V/πr", "h = πr²/V"], correct: 0 },
+            { formula: "3(2a - b) = a", subject: "b", options: ["b = (6a - a)/3", "b = 6a - a/3", "b = (6a - a)", "b = 2a - a/3"], correct: 2 }
+        ];
+
+        function startTimer() {
+            gameRunning = true;
+            timerInterval = setInterval(() => {
+                if (!gameRunning) return;
+                timeLeft--;
+                updateTimer();
+                if (timeLeft <= 0) {
+                    gameRunning = false;
+                    clearInterval(timerInterval);
+                    showTimeUp();
+                }
+            }, 1000);
+        }
+
+        function updateTimer() {
+            const minutes = Math.floor(timeLeft / 60);
+            const seconds = timeLeft % 60;
+            const timerEl = document.getElementById('timer');
+            timerEl.textContent = `Time: ${minutes}:${seconds.toString().padStart(2, '0')}`;
+            if (timeLeft <= 60) timerEl.classList.add('danger');
+            else if (timeLeft <= 120) timerEl.classList.add('warning');
+        }
+
+        function updateStreak() {
+            document.getElementById('streak').textContent = `Correct Answers: ${correctAnswers}/10`;
+            const progress = (correctAnswers / 10) * 80;
+            document.getElementById('player').style.left = progress + '%';
+        }
+
+        function show(content) {
+            document.getElementById('content').innerHTML = content;
+        }
+
+        function selectQuestion() {
+            let available = questions.filter(q => !usedQuestions.includes(q));
+            if (available.length === 0) {
+                usedQuestions = [];
+                available = questions;
+            }
+            const q = available[Math.floor(Math.random() * available.length)];
+            usedQuestions.push(q);
+            return q;
+        }
+
+        function start() {
+            show(`
+                <div class="story-box">
+                    <h3 class="story-title">Lunch Money Crisis!</h3>
+                    <p>It's lunch break.</p>
+                    <p>You reach into your pocket for your money... and it's gone!</p>
+                    <p>Outside the window, you see the school goat strolling on the assembly ground. There's something in its mouth - your lunch money!</p>
+                    <p>The goat slows down to start chewing your money.</p>
+                </div>
+                <button class="btn" onclick="beginChase()">CHASE THE GOAT!</button>
+            `);
+        }
+
+        function beginChase() {
+            startTimer();
+            askQuestion();
+        }
+
+        function askQuestion() {
+            const loc = locations[currentLocation];
+            const narrativeIndex = Math.min(cycleCount, loc.narratives.length - 1);
+            const q = selectQuestion();
+            selectedQuestions.push(q);
+
+            show(`
+                <div class="story-box">
+                    <div class="location-badge">${loc.name}</div>
+                    <p>${loc.narratives[narrativeIndex]}</p>
+                </div>
+                <div class="question-box">
+                    <div class="formula">Given: ${q.formula}</div>
+                    <div class="instruction">Make <strong>${q.subject}</strong> the subject</div>
+                </div>
+                <div class="options">
+                    ${q.options.map((opt, i) => 
+                        `<button class="option-btn" onclick="checkAnswer(${i}, ${q.correct})">${String.fromCharCode(65 + i)}) ${opt}</button>`
+                    ).join('')}
+                </div>
+            `);
+        }
+
+        function checkAnswer(selected, correct) {
+            if (selected === correct) {
+                correctAnswers++;
+                updateStreak();
+                
+                if (correctAnswers >= 10) {
+                    gameRunning = false;
+                    clearInterval(timerInterval);
+                    showVictory();
+                    return;
+                }
+
+                currentLocation++;
+                if (currentLocation >= locations.length) {
+                    currentLocation = 0;
+                    cycleCount++;
+                }
+
+                const desperationLevel = correctAnswers >= 7 ? "Your hands are shaking with hunger and determination!" :
+                                       correctAnswers >= 5 ? "You can smell lunch from the tuck shop. So close!" :
+                                       "You're gaining on it!";
+
+                show(`
+                    <div class="narrative">
+                        <p><strong>Correct!</strong> You're getting closer!</p>
+                        <p>${desperationLevel}</p>
+                    </div>
+                    <button class="btn" onclick="askQuestion()">KEEP CHASING</button>
+                `);
+            } else {
+                wrongAnswers++;
+                currentLocation++;
+                if (currentLocation >= locations.length) {
+                    currentLocation = 0;
+                    cycleCount++;
+                }
+
+                const frustration = timeLeft < 120 ? "Time is running out! The lunch queue is getting shorter!" :
+                                  timeLeft < 180 ? "Wrong! The goat bleats mockingly!" :
+                                  "Wrong! The goat escapes further away!";
+
+                show(`
+                    <div class="narrative wrong">
+                        <p><strong>Wrong!</strong></p>
+                        <p>${frustration}</p>
+                    </div>
+                    <button class="btn" onclick="askQuestion()">KEEP TRYING</button>
+                `);
+            }
+        }
+
+        function showVictory() {
+            if (wrongAnswers >= 3) {
+                // Too many mistakes - Principal wants to see you
+                show(`
+                    <div class="final-result">
+                        <div class="final-emoji">😅</div>
+                        <h2>Money Recovered... Sort Of</h2>
+                        <p>With a final desperate lunge, you grab your money from the goat's mouth!</p>
+                        <p>It's soggy, covered in goat saliva, but it's yours!</p>
+                        <p>You rush to the tuck shop. Finally, lunch!</p>
+                        <p>But as you're biting into your rice, a prefect approaches.</p>
+                        <p>"The Principal wants to see you. Now."</p>
+                        <p>Apparently, the goat chase went on so long that teachers reported it. Word has reached the Principal's office.</p>
+                        <p>You walk slowly toward the admin block, food in hand, wondering how you'll explain this...</p>
+                        <button class="btn restart" onclick="restart()">PLAY AGAIN</button>
+                    </div>
+                `);
+            } else {
+                // Clean victory - caught it quickly
+                show(`
+                    <div class="final-result">
+                        <div class="final-emoji">🎉</div>
+                        <h2>You Caught The Goat!</h2>
+                        <p>With a final desperate lunge, you grab your money just as the goat tries to swallow it!</p>
+                        <p>It's a bit soggy and covered in goat saliva, but it's YOURS!</p>
+                        <p>You sprint to the tuck shop before they close. Rice and stew never tasted so good!</p>
+                        <p>Your classmates give you a standing ovation. You're a legend now!</p>
+                        <p>Best of all, you caught it so fast that none of the teachers noticed. Your secret is safe!</p>
+                        <button class="btn restart" onclick="restart()">PLAY AGAIN</button>
+                    </div>
+                `);
+            }
+        }
+
+        function showTimeUp() {
+            show(`
+                <div class="final-result">
+                    <div class="final-emoji">⏰</div>
+                    <h2>Time's Up!</h2>
+                    <p>The lunch break bell rings. The goat disappears into the bushes with your money.</p>
+                    <p>Your stomach growls loudly in protest.</p>
+                    <p>Your friend takes pity on you and shares half their sandwich.</p>
+                    <p>"Next time," they say, "maybe keep your money in your bag?"</p>
+                    <button class="btn restart" onclick="restart()">TRY AGAIN</button>
+                </div>
+            `);
+        }
+
+        function restart() {
+            correctAnswers = 0;
+            wrongAnswers = 0;
+            currentLocation = 0;
+            selectedQuestions = [];
+            usedQuestions = [];
+            timeLeft = 300;
+            gameRunning = false;
+            cycleCount = 0;
+            clearInterval(timerInterval);
+            document.getElementById('timer').classList.remove('warning', 'danger');
+            document.getElementById('timer').textContent = 'Time: 5:00';
+            document.getElementById('player').style.left = '0%';
+            updateStreak();
+            start();
+        }
+
+        start();
+        updateStreak();
+    </script>
+</body>
+</html>
