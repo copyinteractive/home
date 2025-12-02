@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Math Challenge - 7 Minutes</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            max-width: 800px;
+            width: 100%;
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .header p {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .start-screen, .quiz-screen, .result-screen {
+            padding: 40px;
+        }
+
+        .start-screen {
+            text-align: center;
+        }
+
+        .start-screen h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 2em;
+        }
+
+        .instructions {
+            background: #f7f7f7;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+            text-align: left;
+        }
+
+        .instructions ul {
+            margin-left: 20px;
+            line-height: 1.8;
+        }
+
+        .instructions li {
+            margin: 10px 0;
+            color: #333;
+        }
+
+        .btn {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.2em;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: transform 0.3s, box-shadow 0.3s;
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(0);
+        }
+
+        .quiz-info {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+            border-radius: 10px;
+            color: white;
+        }
+
+        .timer, .question-counter {
+            font-size: 1.3em;
+            font-weight: bold;
+        }
+
+        .timer.warning {
+            animation: pulse 1s infinite;
+            color: #ffeb3b;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .question-container {
+            background: #f9f9f9;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .question-text {
+            font-size: 1.3em;
+            color: #333;
+            margin-bottom: 25px;
+            line-height: 1.6;
+        }
+
+        .options {
+            display: grid;
+            gap: 15px;
+        }
+
+        .option {
+            background: white;
+            border: 2px solid #e0e0e0;
+            padding: 18px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1em;
+        }
+
+        .option:hover {
+            border-color: #667eea;
+            background: #f0f4ff;
+            transform: translateX(5px);
+        }
+
+        .option.selected {
+            background: #667eea;
+            color: white;
+            border-color: #667eea;
+        }
+
+        .navigation {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            flex: 1;
+            padding: 12px;
+            font-size: 1em;
+        }
+
+        .result-screen {
+            text-align: center;
+        }
+
+        .score-display {
+            font-size: 4em;
+            color: #667eea;
+            font-weight: bold;
+            margin: 30px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        .result-message {
+            font-size: 1.5em;
+            color: #333;
+            margin-bottom: 30px;
+        }
+
+        .summary {
+            background: #f7f7f7;
+            padding: 25px;
+            border-radius: 10px;
+            margin: 25px 0;
+        }
+
+        .summary-item {
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0;
+            border-bottom: 1px solid #e0e0e0;
+            font-size: 1.1em;
+        }
+
+        .summary-item:last-child {
+            border-bottom: none;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #667eea 0%, #764ba2 100%);
+            transition: width 0.3s;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🎯 Math Challenge</h1>
+            <p>Test Your Math Skills!</p>
+        </div>
+
+        <div class="start-screen" id="startScreen">
+            <h2>Welcome to the Challenge!</h2>
+            <div class="instructions">
+                <h3>📋 Game Rules:</h3>
+                <ul>
+                    <li>⏱️ You have <strong>7 minutes</strong> to complete the quiz</li>
+                    <li>📝 Answer <strong>10 questions</strong> randomly selected from 20</li>
+                    <li>⭐ Each correct answer = <strong>10 marks</strong></li>
+                    <li>🎯 Total possible score = <strong>100 marks</strong></li>
+                    <li>💡 You can navigate between questions freely</li>
+                    <li>🏁 Submit when ready or timer runs out</li>
+                </ul>
+            </div>
+            <button class="btn" onclick="startQuiz()">Start Quiz</button>
+        </div>
+
+        <div class="quiz-screen hidden" id="quizScreen">
+            <div class="quiz-info">
+                <div class="timer" id="timer">⏱️ 07:00</div>
+                <div class="question-counter" id="questionCounter">Question 1/10</div>
+            </div>
+            
+            <div class="progress-bar">
+                <div class="progress-fill" id="progressFill" style="width: 10%"></div>
+            </div>
+
+            <div class="question-container">
+                <div class="question-text" id="questionText"></div>
+                <div class="options" id="optionsContainer"></div>
+            </div>
+
+            <div class="navigation">
+                <button class="btn nav-btn" onclick="prevQuestion()" id="prevBtn">← Previous</button>
+                <button class="btn nav-btn" onclick="nextQuestion()" id="nextBtn">Next →</button>
+                <button class="btn nav-btn" onclick="submitQuiz()" id="submitBtn" style="display:none;">🏁 Submit Quiz</button>
+            </div>
+        </div>
+
+        <div class="result-screen hidden" id="resultScreen">
+            <h2>🎉 Quiz Complete!</h2>
+            <div class="score-display" id="scoreDisplay">0/100</div>
+            <div class="result-message" id="resultMessage"></div>
+            <div class="summary">
+                <div class="summary-item">
+                    <span>Correct Answers:</span>
+                    <span id="correctCount">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Wrong Answers:</span>
+                    <span id="wrongCount">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Unanswered:</span>
+                    <span id="unansweredCount">0</span>
+                </div>
+                <div class="summary-item">
+                    <span>Time Taken:</span>
+                    <span id="timeTaken">0:00</span>
+                </div>
+            </div>
+            <button class="btn" onclick="location.reload()">🔄 Try Again</button>
+        </div>
+    </div>
+
+    <script>
+        const allQuestions = [
+            {q: "Find the compound interest on N80,000 for 3 years at 5% per annum.", options: ["N10,500", "N12,600", "N12,000", "N10,125"], answer: 1},
+            {q: "If p is one-third of the positive difference between 45 and (6 × 5), find p.", options: ["5", "10", "7", "15"], answer: 0},
+            {q: "Solve: 7x = 3x + 20", options: ["4", "5", "6", "7"], answer: 1},
+            {q: "Solve: 9k - 4 = 3k + 8", options: ["1", "2", "3", "4"], answer: 1},
+            {q: "Solve: m - 25 = m²", options: ["5", "-5", "0", "Both -5 and 5"], answer: 1},
+            {q: "Solve: 3y + 2 = 4(y - 5)", options: ["18", "20", "22", "24"], answer: 2},
+            {q: "In the equations 2x + 3y = 18 and x - y = 2, find the value of x.", options: ["4", "6", "8", "10"], answer: 1},
+            {q: "In the equations 2x + 3y = 18 and x - y = 2, find the value of y.", options: ["2", "3", "4", "5"], answer: 0},
+            {q: "Two phones and three earphones weigh 760 g. One phone and five earphones weigh 620 g. What is the mass of one phone?", options: ["250 g", "260 g", "300 g", "320 g"], answer: 1},
+            {q: "Make x the subject: kx³ = p", options: ["x = √(p/k)", "x = ³√(p/k)", "x = p³/k", "x = k/p³"], answer: 1},
+            {q: "Simplify: 6p - 14 - p - 3p + 20", options: ["2p + 6", "4p - 6", "12p - 6", "2p - 6"], answer: 0},
+            {q: "Factorize: 3z² - 27", options: ["3(z + 9)", "3(z² - 9)", "3(z - 3)(z + 3)", "(z - 3)(z + 3)"], answer: 2},
+            {q: "In base 2: 11001 - 10101 = ?", options: ["00100", "01100", "01000", "10010"], answer: 0},
+            {q: "Solve: 5(3x - 2) = 4(x + 7)", options: ["6", "7", "5", "4"], answer: 3},
+            {q: "Solve: s² = 3s + 18", options: ["6", "-6", "Both 6 and -6", "3"], answer: 0},
+            {q: "When the sum of 48 and a number is divided by 6, the result equals three times the number. Find the number.", options: ["2", "3", "4", "5"], answer: 2},
+            {q: "If y = 25x² and y = 2,500, find x.", options: ["5", "10", "15", "20"], answer: 1},
+            {q: "The sum of five consecutive whole numbers is 145. What is the middle number?", options: ["27", "28", "29", "30"], answer: 2},
+            {q: "Using T = 30m + 18, find the time to cook 1.5 kg of beans.", options: ["63 min", "70 min", "63.5 min", "55 min"], answer: 0},
+            {q: "If it takes 108 minutes to boil a mass m of beans, using T = 30m + 18, what is m?", options: ["2 kg", "3 kg", "4 kg", "5 kg"], answer: 1}
+        ];
+
+        let selectedQuestions = [];
+        let currentQuestion = 0;
+        let userAnswers = [];
+        let timer;
+        let timeRemaining = 420;
+        let startTime;
+
+        function shuffleArray(array) {
+            const shuffled = [...array];
+            for (let i = shuffled.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [shuffled[i], shuffled[j]] = [shuffled[j], shuffled[i]];
+            }
+            return shuffled;
+        }
+
+        function startQuiz() {
+            selectedQuestions = shuffleArray(allQuestions).slice(0, 10);
+            userAnswers = new Array(10).fill(null);
+            currentQuestion = 0;
+            startTime = Date.now();
+            
+            document.getElementById('startScreen').classList.add('hidden');
+            document.getElementById('quizScreen').classList.remove('hidden');
+            
+            displayQuestion();
+            startTimer();
+        }
+
+        function startTimer() {
+            timer = setInterval(() => {
+                timeRemaining--;
+                const minutes = Math.floor(timeRemaining / 60);
+                const seconds = timeRemaining % 60;
+                const timerElement = document.getElementById('timer');
+                timerElement.textContent = `⏱️ ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+                
+                if (timeRemaining <= 60) {
+                    timerElement.classList.add('warning');
+                }
+                
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    submitQuiz();
+                }
+            }, 1000);
+        }
+
+        function displayQuestion() {
+            const question = selectedQuestions[currentQuestion];
+            document.getElementById('questionText').textContent = `${currentQuestion + 1}. ${question.q}`;
+            document.getElementById('questionCounter').textContent = `Question ${currentQuestion + 1}/10`;
+            
+            const optionsContainer = document.getElementById('optionsContainer');
+            optionsContainer.innerHTML = '';
+            
+            question.options.forEach((option, index) => {
+                const optionDiv = document.createElement('div');
+                optionDiv.className = 'option';
+                if (userAnswers[currentQuestion] === index) {
+                    optionDiv.classList.add('selected');
+                }
+                optionDiv.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                optionDiv.onclick = () => selectOption(index);
+                optionsContainer.appendChild(optionDiv);
+            });
+            
+            updateProgress();
+            updateNavButtons();
+        }
+
+        function selectOption(index) {
+            userAnswers[currentQuestion] = index;
+            displayQuestion();
+        }
+
+        function updateProgress() {
+            const answeredCount = userAnswers.filter(a => a !== null).length;
+            const progress = (answeredCount / 10) * 100;
+            document.getElementById('progressFill').style.width = progress + '%';
+        }
+
+        function updateNavButtons() {
+            document.getElementById('prevBtn').style.display = currentQuestion === 0 ? 'none' : 'block';
+            document.getElementById('nextBtn').style.display = currentQuestion === 9 ? 'none' : 'block';
+            document.getElementById('submitBtn').style.display = currentQuestion === 9 ? 'block' : 'none';
+        }
+
+        function prevQuestion() {
+            if (currentQuestion > 0) {
+                currentQuestion--;
+                displayQuestion();
+            }
+        }
+
+        function nextQuestion() {
+            if (currentQuestion < 9) {
+                currentQuestion++;
+                displayQuestion();
+            }
+        }
+
+        function submitQuiz() {
+            clearInterval(timer);
+            
+            let correct = 0;
+            let wrong = 0;
+            let unanswered = 0;
+            
+            selectedQuestions.forEach((question, index) => {
+                if (userAnswers[index] === null) {
+                    unanswered++;
+                } else if (userAnswers[index] === question.answer) {
+                    correct++;
+                } else {
+                    wrong++;
+                }
+            });
+            
+            const score = correct * 10;
+            const totalTime = Math.floor((Date.now() - startTime) / 1000);
+            const minutes = Math.floor(totalTime / 60);
+            const seconds = totalTime % 60;
+            
+            document.getElementById('quizScreen').classList.add('hidden');
+            document.getElementById('resultScreen').classList.remove('hidden');
+            
+            document.getElementById('scoreDisplay').textContent = `${score}/100`;
+            document.getElementById('correctCount').textContent = correct;
+            document.getElementById('wrongCount').textContent = wrong;
+            document.getElementById('unansweredCount').textContent = unanswered;
+            document.getElementById('timeTaken').textContent = `${minutes}:${String(seconds).padStart(2, '0')}`;
+            
+            let message = '';
+            if (score >= 90) message = '🌟 Outstanding! You are a Math Champion!';
+            else if (score >= 80) message = '🎉 Excellent work! Keep it up!';
+            else if (score >= 70) message = '👍 Great job! You are doing well!';
+            else if (score >= 60) message = '👌 Good effort! Practice makes perfect!';
+            else message = '💪 Keep practicing! You will improve!';
+            
+            document.getElementById('resultMessage').textContent = message;
+        }
+    </script>
+</body>
+</html>
