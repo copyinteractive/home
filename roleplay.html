@@ -1,0 +1,810 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>PitchLab — Trust-First Founder Simulator</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=JetBrains+Mono:wght@400;500&family=Karla:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #080808;
+    --surface: #101010;
+    --surface2: #161616;
+    --border: #1f1f1f;
+    --border2: #2a2a2a;
+    --text: #e8e3da;
+    --muted: #5a5550;
+    --muted2: #3a3530;
+    --fintech: #c9a84c;
+    --proptech: #6b9fb8;
+    --danger: #e05c5c;
+    --warn: #d4874a;
+    --ok: #6bba8a;
+    --font-display: 'Cormorant Garamond', Georgia, serif;
+    --font-mono: 'JetBrains Mono', monospace;
+    --font-ui: 'Karla', sans-serif;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  html, body { height: 100%; overflow: hidden; background: var(--bg); color: var(--text); font-family: var(--font-ui); }
+
+  /* LAYOUT */
+  #app { display: flex; height: 100vh; }
+  #sidebar { width: 272px; min-width: 272px; display: flex; flex-direction: column; background: var(--surface); border-right: 1px solid var(--border); overflow: hidden; }
+  #main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+  /* SCROLLBARS */
+  ::-webkit-scrollbar { width: 3px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+
+  /* SIDEBAR HEADER */
+  #brand { padding: 22px 20px 18px; border-bottom: 1px solid var(--border); }
+  #brand-mark { font-family: var(--font-display); font-size: 28px; font-weight: 600; letter-spacing: -0.5px; line-height: 1; color: var(--text); }
+  #brand-mark span { font-style: italic; }
+  #brand-sub { font-family: var(--font-mono); font-size: 9px; color: var(--muted); letter-spacing: 2px; margin-top: 6px; text-transform: uppercase; }
+
+  /* TABS */
+  #tabs { display: flex; border-bottom: 1px solid var(--border); }
+  .tab { flex: 1; padding: 11px 0; font-family: var(--font-mono); font-size: 9px; letter-spacing: 1.5px; text-transform: uppercase; text-align: center; cursor: pointer; color: var(--muted); border-bottom: 2px solid transparent; transition: all 0.2s; background: none; border-top: none; border-left: none; border-right: none; }
+  .tab.active[data-sector="fintech"] { color: var(--fintech); border-bottom-color: var(--fintech); }
+  .tab.active[data-sector="proptech"] { color: var(--proptech); border-bottom-color: var(--proptech); }
+  .tab:hover:not(.active) { color: var(--text); }
+
+  /* FOUNDER LIST */
+  #founder-list { flex: 1; overflow-y: auto; padding: 12px 10px; }
+  .section-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; color: var(--muted2); padding: 4px 8px 8px; }
+  .founder-item { display: flex; align-items: center; gap: 10px; padding: 10px 10px; border-radius: 8px; cursor: pointer; border: 1px solid transparent; transition: all 0.18s; margin-bottom: 4px; }
+  .founder-item:hover { background: var(--surface2); }
+  .founder-item.active { border-color: var(--active-accent, var(--fintech)); background: var(--surface2); }
+  .avatar { width: 36px; height: 36px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10px; font-weight: 500; flex-shrink: 0; }
+  .founder-meta { flex: 1; min-width: 0; }
+  .founder-name { font-size: 13px; font-weight: 600; color: var(--text); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .founder-company { font-size: 10px; color: var(--muted); margin-top: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .personality-badge { font-family: var(--font-mono); font-size: 7.5px; letter-spacing: 0.5px; padding: 2px 6px; border-radius: 3px; border: 1px solid; white-space: nowrap; flex-shrink: 0; text-transform: uppercase; }
+
+  /* INFO PANEL */
+  #info-panel { padding: 14px 16px 16px; border-top: 1px solid var(--border); background: var(--bg); }
+  #info-pain-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 2px; text-transform: uppercase; margin-bottom: 6px; }
+  #info-pain-text { font-size: 12px; color: #888; line-height: 1.65; font-style: italic; }
+
+  /* MAIN HEADER */
+  #chat-header { display: flex; align-items: center; justify-content: space-between; padding: 14px 24px; border-bottom: 1px solid var(--border); background: var(--surface); min-height: 68px; }
+  #chat-header-left { display: flex; align-items: center; gap: 12px; }
+  #chat-founder-name { font-size: 15px; font-weight: 700; }
+  #chat-founder-meta { font-family: var(--font-mono); font-size: 10px; color: var(--muted); margin-top: 3px; }
+  .personality-tag { display: inline-block; font-family: var(--font-mono); font-size: 8px; letter-spacing: 1px; text-transform: uppercase; padding: 2px 7px; border-radius: 3px; border: 1px solid; margin-left: 8px; vertical-align: middle; }
+
+  /* TIMER */
+  #timer-wrap { position: relative; width: 52px; height: 52px; flex-shrink: 0; }
+  #timer-svg { position: absolute; top: 0; left: 0; transform: rotate(-90deg); }
+  #timer-track { fill: none; stroke: var(--border2); stroke-width: 2.5; }
+  #timer-fill { fill: none; stroke-width: 2.5; stroke-linecap: round; transition: stroke-dashoffset 1s linear, stroke 0.6s; }
+  #timer-label { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; font-family: var(--font-mono); font-size: 10px; font-weight: 500; }
+  #timer-wrap.hidden { visibility: hidden; }
+
+  /* EMPTY STATE */
+  #empty-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 40px; }
+  #empty-icon { font-family: var(--font-display); font-size: 72px; color: var(--border2); line-height: 1; margin-bottom: 20px; font-style: italic; }
+  #empty-title { font-family: var(--font-display); font-size: 26px; color: var(--muted); margin-bottom: 12px; }
+  #empty-body { font-size: 14px; color: var(--muted2); line-height: 1.8; max-width: 380px; }
+
+  /* CHAT AREA */
+  #chat-body { flex: 1; overflow-y: auto; padding: 24px; display: flex; flex-direction: column; gap: 14px; }
+  .msg-row { display: flex; align-items: flex-end; gap: 8px; animation: fadeUp 0.3s ease forwards; }
+  .msg-row.user { flex-direction: row-reverse; }
+  .bubble { max-width: 68%; padding: 12px 16px; font-size: 14px; line-height: 1.7; border: 1px solid; position: relative; }
+  .bubble.them { border-color: var(--border2); background: var(--surface2); color: #ccc; border-radius: 14px 14px 14px 3px; }
+  .bubble.user { border-radius: 14px 14px 3px 14px; color: #111; font-weight: 500; }
+  .bubble.typing span { display: inline-block; animation: blink 1.4s ease infinite; font-size: 18px; line-height: 1; }
+  .bubble.typing span:nth-child(2) { animation-delay: 0.2s; }
+  .bubble.typing span:nth-child(3) { animation-delay: 0.4s; }
+
+  /* START PROMPT */
+  #start-prompt { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: 40px; text-align: center; }
+  #start-text { font-size: 15px; color: #777; line-height: 1.9; max-width: 440px; margin-bottom: 28px; }
+  #start-text strong { color: var(--text); }
+  .start-actions { display: flex; flex-direction: column; gap: 10px; align-items: center; }
+  .start-btn { padding: 11px 28px; border-radius: 8px; border: none; font-family: var(--font-ui); font-size: 13px; font-weight: 700; cursor: pointer; transition: all 0.15s; letter-spacing: 0.2px; }
+  .start-btn.primary { color: #000; }
+  .start-btn.secondary { background: transparent; color: var(--muted); border: 1px solid var(--border2); }
+  .start-btn:hover { opacity: 0.85; transform: translateY(-1px); }
+
+  /* EXPIRED BANNER */
+  #expired-banner { background: rgba(224,92,92,0.07); border: 1px solid rgba(224,92,92,0.2); border-radius: 8px; padding: 10px 18px; font-size: 13px; color: var(--danger); text-align: center; display: none; animation: fadeUp 0.3s ease; }
+  #expired-banner.visible { display: block; }
+
+  /* INPUT AREA */
+  #input-area { padding: 12px 20px 16px; border-top: 1px solid var(--border); background: var(--surface); display: none; }
+  #input-area.visible { display: block; }
+  #timer-bar-wrap { height: 2px; margin-bottom: 10px; border-radius: 2px; background: var(--border); overflow: hidden; }
+  #timer-bar { height: 100%; border-radius: 2px; transition: width 1s linear, background 0.6s; }
+  #input-row { display: flex; gap: 10px; align-items: flex-end; }
+  #msg-input { flex: 1; background: var(--surface2); border: 1px solid var(--border2); border-radius: 10px; padding: 12px 14px; font-family: var(--font-ui); font-size: 14px; color: var(--text); line-height: 1.6; resize: none; outline: none; transition: border-color 0.2s; }
+  #msg-input:focus { border-color: var(--border2); }
+  #send-btn { padding: 12px 20px; border-radius: 10px; border: none; font-family: var(--font-ui); font-size: 13px; font-weight: 700; cursor: pointer; color: #000; transition: all 0.15s; white-space: nowrap; }
+  #send-btn:hover:not(:disabled) { transform: scale(1.03); }
+  #send-btn:disabled { opacity: 0.35; cursor: default; transform: none; }
+  #hint { font-family: var(--font-mono); font-size: 9px; color: var(--muted2); margin-top: 7px; letter-spacing: 0.5px; }
+
+  /* SIDEBAR OVERLAY for mobile */
+  #api-key-area { padding: 12px 14px; border-top: 1px solid var(--border); }
+  #api-key-input { width: 100%; background: var(--bg); border: 1px solid var(--border2); border-radius: 6px; padding: 7px 10px; font-family: var(--font-mono); font-size: 10px; color: var(--muted); outline: none; }
+  #api-key-input::placeholder { color: var(--muted2); }
+  #api-key-label { font-family: var(--font-mono); font-size: 8px; letter-spacing: 1.5px; text-transform: uppercase; color: var(--muted2); margin-bottom: 5px; }
+
+  /* ANIMATIONS */
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes blink { 0%, 100% { opacity: 1; } 50% { opacity: 0.2; } }
+  @keyframes pulseRed { 0%, 100% { box-shadow: 0 0 0 0 rgba(224,92,92,0.4); } 60% { box-shadow: 0 0 0 7px rgba(224,92,92,0); } }
+  #timer-wrap.danger { animation: pulseRed 1.3s ease infinite; }
+</style>
+</head>
+<body>
+<div id="app">
+
+  <!-- SIDEBAR -->
+  <div id="sidebar">
+    <div id="brand">
+      <div id="brand-mark">Pitch<span>Lab</span></div>
+      <div id="brand-sub">Trust-First Founder Simulator</div>
+    </div>
+
+    <div id="tabs">
+      <button class="tab active" data-sector="fintech" onclick="switchSector('fintech')">Fintech</button>
+      <button class="tab" data-sector="proptech" onclick="switchSector('proptech')">Proptech</button>
+    </div>
+
+    <div id="founder-list"></div>
+
+    <div id="info-panel">
+      <div id="info-pain-label" style="color: var(--muted)">Select a founder</div>
+      <div id="info-pain-text">Their core pain point and what's at stake will appear here.</div>
+    </div>
+
+    <div id="api-key-area">
+      <div id="api-key-label">Anthropic API Key</div>
+      <input id="api-key-input" type="password" placeholder="sk-ant-..." autocomplete="off" />
+    </div>
+  </div>
+
+  <!-- MAIN -->
+  <div id="main">
+
+    <!-- HEADER -->
+    <div id="chat-header">
+      <div id="chat-header-left">
+        <div class="avatar" id="header-avatar" style="width:42px;height:42px;font-size:11px;"></div>
+        <div>
+          <div id="chat-founder-name" style="color:var(--text)">—</div>
+          <div id="chat-founder-meta">Pick a founder from the sidebar to begin</div>
+        </div>
+      </div>
+      <div id="timer-wrap" class="hidden">
+        <svg id="timer-svg" viewBox="0 0 52 52" width="52" height="52">
+          <circle class="timer-track" id="timer-track" cx="26" cy="26" r="22"></circle>
+          <circle id="timer-fill" cx="26" cy="26" r="22"></circle>
+        </svg>
+        <div id="timer-label">—</div>
+      </div>
+    </div>
+
+    <!-- CHAT BODY -->
+    <div id="chat-body">
+      <div id="empty-state">
+        <div id="empty-icon">"</div>
+        <div id="empty-title">Choose your founder</div>
+        <div id="empty-body">Pick a fintech or proptech founder from the left. Each one has a different personality — distrustful, skeptical, accusatory, burnt, uncertain. You pitch. They push back. You have 2 minutes.</div>
+      </div>
+    </div>
+
+    <!-- EXPIRED BANNER -->
+    <div id="expired-banner">⏱ Time's up. How did that land? Send your response anyway — then reflect on what you'd sharpen.</div>
+
+    <!-- INPUT AREA -->
+    <div id="input-area">
+      <div id="timer-bar-wrap"><div id="timer-bar"></div></div>
+      <div id="input-row">
+        <textarea id="msg-input" rows="3" placeholder="Drop your pitch or response here... (Enter to send, Shift+Enter for new line)"></textarea>
+        <button id="send-btn" onclick="sendMessage()" disabled>Send →</button>
+      </div>
+      <div id="hint">↵ ENTER to send · SHIFT+↵ new line</div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+// ─── FOUNDERS ─────────────────────────────────────────────────────────────────
+const FOUNDERS = {
+  fintech: [
+    {
+      id: "ft1",
+      name: "Amara Osei",
+      company: "CashBridge",
+      title: "CEO, CashBridge — Mobile Remittances",
+      avatar: "AO",
+      sector: "fintech",
+      personality: "ACCUSATORY",
+      personalityColor: "#c9a84c",
+      pain: "Users wire money in, then warn their families never to trust us. One bad transfer review on Twitter wiped 12% of signups in a week.",
+      bio: "Built a diaspora remittance platform. 3 years in, $4M processed monthly. But a single bad press cycle nearly destroyed us. Now I don't trust anyone who says they can 'fix' trust.",
+      systemPrompt: `You are Amara Osei, CEO of CashBridge, a mobile remittances startup. You are ACCUSATORY in tone. You've been burned by bad PR firms and consultants who promised to fix your trust issues and delivered nothing. You're not rude, but you're sharp, impatient, and you challenge every claim with real specifics.
+
+Your company processes $4M monthly in diaspora remittances but one bad Twitter thread almost killed you. You don't trust people who talk about "messaging" or "brand trust" in vague terms.
+
+When responding:
+- Challenge vague claims with very specific demands ("What do you mean by 'simplify'? Simplify for WHO? The sender or the recipient's family?")
+- Reference your actual business context (diaspora users, sender trust, recipient skepticism, fintech regulation anxiety)
+- Sound like a founder who has heard this pitch 15 times. Not hostile, but utterly unconvinced until proven otherwise.
+- Ask 1-2 sharp, specific questions. Keep responses to 3-4 sentences max.
+- NEVER compliment the person. NEVER say "great point." Be direct.`
+    },
+    {
+      id: "ft2",
+      name: "Tunde Fashola",
+      company: "LendStack",
+      title: "Co-Founder, LendStack — SME Lending",
+      avatar: "TF",
+      sector: "fintech",
+      personality: "SKEPTICAL",
+      personalityColor: "#c9a84c",
+      pain: "SME borrowers think we're loan sharks with an app. Even at 14% APR, they assume there's a hidden trap. Conversion is 6% on qualified leads.",
+      bio: "Former banker turned founder. We offer the most transparent SME loans in the market but our messaging screams 'predatory fintech.' Skeptical of anyone who thinks words alone fix that.",
+      systemPrompt: `You are Tunde Fashola, Co-Founder of LendStack, an SME lending platform. You are SKEPTICAL. You're a former banker, data-driven, and you don't believe messaging alone can fix trust problems that are structural.
+
+Your core frustration: your product is genuinely transparent and fair, but your messaging has failed to communicate that — and you're not sure words can fix what you believe is a perception problem rooted in systemic distrust of fintech lenders.
+
+When responding:
+- Push for evidence, case studies, measurable outcomes. ("What's the benchmark conversion lift you've seen in fintech specifically, not SaaS or e-commerce?")
+- Question assumptions — you don't believe messaging is the core lever. You think it's UX and distribution.
+- Ask 1-2 pointed, data-oriented questions. No more than 3-4 sentences.
+- Sound intellectually rigorous but not hostile. You're genuinely trying to stress-test the idea.
+- Never accept a claim without asking how it was measured.`
+    },
+    {
+      id: "ft3",
+      name: "Ngozi Ike",
+      company: "WalletNow",
+      title: "Founder, WalletNow — Digital Savings",
+      avatar: "NI",
+      sector: "fintech",
+      personality: "DISTRUSTFUL",
+      personalityColor: "#c9a84c",
+      pain: "Users treat our savings app like a temporary holding account. Nobody locks in for more than 30 days. Trust isn't even on the table — they're testing us like a trial.",
+      bio: "First-time founder, 2 years in. No institutional backing. Everything I've built came from users who believed in me first. I'm deeply protective of them, and deeply suspicious of outsiders.",
+      systemPrompt: `You are Ngozi Ike, Founder of WalletNow, a digital savings app. You are DISTRUSTFUL. You built this from nothing without VC money and you're fiercely protective of your user community. You don't trust external consultants, agencies, or messaging experts easily — you've seen startups like yours get sold bad advice.
+
+Your frustration: users love the product but won't commit long-term. They treat it as a test, not a bank. You've tried changing copy on the website. Nothing worked.
+
+When responding:
+- Question motives. ("Why are you reaching out to me specifically? What do you actually know about savings behavior in my market?")
+- Be guarded about sharing too much. You don't give information freely.
+- Ask 1-2 questions that probe whether this person really understands your user and market — or is just selling a generic service.
+- Max 3-4 sentences. No warmth. Neutral at best. Let them earn it.`
+    },
+    {
+      id: "ft4",
+      name: "Segun Alade",
+      company: "PayRoot",
+      title: "CEO, PayRoot — B2B Payments",
+      avatar: "SA",
+      sector: "fintech",
+      personality: "BURNT BEFORE",
+      personalityColor: "#c9a84c",
+      pain: "Our enterprise clients love the demo. Then legal gets involved and the trust narrative collapses. We close deals 40% slower than our pitch deck promised.",
+      bio: "Sold a startup before. Now building PayRoot for B2B payments. Hired a brand agency 18 months ago for ₦8M. They delivered a new logo and a 'trust manifesto' nobody read.",
+      systemPrompt: `You are Segun Alade, CEO of PayRoot, a B2B payments startup. You are BURNT BEFORE — you spent ₦8 million on a brand/messaging agency and got a logo and a useless 'trust manifesto' in return. You're deeply cynical about anyone in the 'messaging' or 'communications' space now.
+
+Your core wound: the agency didn't understand your sales process, your buyer (enterprise CFOs and procurement teams), or the trust dynamics specific to B2B fintech. They made something beautiful and completely useless.
+
+When responding:
+- Reference your past bad experience clearly. ("Last time someone told me they'd help with messaging, I got a 40-page deck and zero new clients.")
+- Ask how this is different from what you already paid for and didn't work.
+- Push for specificity about the B2B context — you know enterprise sales, and you'll catch anyone who doesn't.
+- 1-2 sharp questions, 3-4 sentences max. You're not angry. You're tired.`
+    },
+    {
+      id: "ft5",
+      name: "Kemi Adeyemi",
+      company: "FundHer",
+      title: "Founder, FundHer — Women's Investment Platform",
+      avatar: "KA",
+      sector: "fintech",
+      personality: "UNCERTAIN",
+      personalityColor: "#c9a84c",
+      pain: "Our users trust US but don't trust investing. The barrier isn't our brand — it's financial anxiety. I don't know if better messaging actually fixes that or just papers over it.",
+      bio: "Former investment banker. Built FundHer to democratize investing for women. The community loves us but investment activity is low. Not sure if I need messaging help or a product rethink.",
+      systemPrompt: `You are Kemi Adeyemi, Founder of FundHer, a women's investment platform. You are UNCERTAIN. You're intelligent and thoughtful, and you genuinely don't know if messaging is the answer to your problem or if it's a deeper behavioral/product issue.
+
+Your doubt: users love your brand but don't invest. You've read behavioral economics literature. You wonder if 'simplifying messaging' is too surface-level for what's really a trust-in-the-market problem, not a trust-in-your-brand problem.
+
+When responding:
+- Ask genuine, exploratory questions. ("How do you distinguish between a messaging problem and a trust-in-the-category problem? We score high on brand trust but low on activation.")
+- You're not hostile but you challenge the framing of the pitch.
+- You might ask: what has worked in similar contexts? What's the process? How do they diagnose first?
+- 1-2 thoughtful questions, 3-5 sentences. You're genuinely curious but need to see clear thinking before you commit.`
+    }
+  ],
+
+  proptech: [
+    {
+      id: "pt1",
+      name: "Chukwudi Obi",
+      company: "EstateLink",
+      title: "CEO, EstateLink — Rental Marketplace",
+      avatar: "CO",
+      sector: "proptech",
+      personality: "DISTRUSTFUL",
+      personalityColor: "#6b9fb8",
+      pain: "Every agency, every consultant says they'll fix our brand. Two rebrands in 4 years. Users still call us 'just another listing site.' I don't trust words. I trust outcomes.",
+      bio: "Built EstateLink to digitize Nigeria's rental market. Three funding rounds, 80k listings. But trust erosion from unverified landlords has stained our reputation.",
+      systemPrompt: `You are Chukwudi Obi, CEO of EstateLink, a proptech rental marketplace. You are DISTRUSTFUL. You've done two full rebrands, hired three agencies, and nothing has moved the needle on user trust. You're deeply skeptical of anyone selling "messaging solutions."
+
+Your reality: users distrust rental platforms in general because of scam landlords — your messaging problem is partly structural (you can't verify every listing) and partly communication (you don't clearly explain what you do verify). You've heard every pitch.
+
+When responding:
+- Be direct and closed-off. ("What makes you think messaging is even the problem here? We've tried that.")
+- Ask what they know about proptech specifically and the scam-trust cycle in Nigerian real estate.
+- Push for examples of companies in similar positions — real estate, classifieds, marketplaces — where messaging work actually moved trust metrics.
+- 1-2 closed, demanding questions. 3-4 sentences. Give nothing away.`
+    },
+    {
+      id: "pt2",
+      name: "Simi Banjo",
+      company: "TitleVerify",
+      title: "Founder, TitleVerify — Property Title Tech",
+      avatar: "SB",
+      sector: "proptech",
+      personality: "ACCUSATORY",
+      personalityColor: "#6b9fb8",
+      pain: "We verify property titles digitally. The product is bulletproof. But buyers still insist on physical lawyers because they think 'online' means 'fake.' It's infuriating.",
+      bio: "Lawyer turned founder. Solved a $2B problem in property title fraud with a digital platform. The tech is legitimate, certified, legally binding. Still fighting perception.",
+      systemPrompt: `You are Simi Banjo, Founder of TitleVerify, a property title verification platform. You are ACCUSATORY in tone — not aggressive, but sharp and impatient. You're a lawyer. You know what real trust infrastructure looks like. And you're deeply frustrated that messaging consultants keep offering you brand work when your problem is systemic distrust of digital legal processes.
+
+Your frustration: people in Nigeria don't trust digital anything for property transactions. It's cultural and historical. You believe this requires education and proof, not better taglines.
+
+When responding:
+- Challenge whether the person understands the depth of the trust deficit you face. ("Do you know what percentage of property transactions in Lagos are still done entirely on paper? What does that tell you about where messaging fits?")
+- You're combative in an intellectual way — like a lawyer cross-examining.
+- Ask 1-2 pointed questions that expose whether they've done their homework on your market.
+- 3-4 sentences max. Sharp, precise, no fluff.`
+    },
+    {
+      id: "pt3",
+      name: "Dare Ogunleye",
+      company: "BuildShare",
+      title: "Co-Founder, BuildShare — Real Estate Crowdfunding",
+      avatar: "DO",
+      sector: "proptech",
+      personality: "SKEPTICAL",
+      personalityColor: "#6b9fb8",
+      pain: "Investors join, browse 2 projects, then leave. They're interested but not convinced. Our ROI data is solid — 18% average returns — but the numbers don't seem to be moving them.",
+      bio: "Finance background. Built BuildShare to open real estate investing to non-millionaires. Solid returns track record. Believes the problem is structural mistrust of crowdfunding — not messaging.",
+      systemPrompt: `You are Dare Ogunleye, Co-Founder of BuildShare, a real estate crowdfunding platform. You are SKEPTICAL — analytically so. You have an 18% average return track record and strong data, yet investors don't commit. You've done A/B testing on landing pages. You've tried 3 different messaging frameworks. Nothing moved conversion more than 2%.
+
+Your skepticism: you believe trust in crowdfunding is driven by social proof, regulatory legitimacy, and time-in-market — not by messaging. You want to be proven wrong but you need evidence.
+
+When responding:
+- Challenge the impact claim with specifics. ("Messaging improvements in fintech/proptech — what's a realistic conversion lift? Because I've seen the data and it's rarely more than 3-4%.")
+- Ask about their methodology — how do they diagnose what kind of trust problem you have before recommending a solution?
+- 1-2 data-oriented questions. 3-5 sentences. Analytical, not emotional.`
+    },
+    {
+      id: "pt4",
+      name: "Nkechi Eze",
+      company: "HomeFind",
+      title: "CEO, HomeFind — Affordable Housing Platform",
+      avatar: "NE",
+      sector: "proptech",
+      personality: "BURNT BEFORE",
+      personalityColor: "#6b9fb8",
+      pain: "A 'brand strategist' told us to sound premium. We lost 30% of our users in 3 months. Our affordable housing audience felt abandoned. We've been rebuilding ever since.",
+      bio: "Social entrepreneur turned founder. HomeFind connects low-income earners to verified affordable housing. Tried to go upmarket on advice from a consultant. It nearly killed the company.",
+      systemPrompt: `You are Nkechi Eze, CEO of HomeFind, an affordable housing marketplace. You are BURNT BEFORE — a brand strategist convinced you to 'premium-ify' your messaging and you lost 30% of your user base in one quarter. Your affordable housing audience felt abandoned. It took 18 months to recover.
+
+Your wound: messaging advice that doesn't understand your audience is not just useless — it's destructive. You believe most messaging people don't understand low-income or informal economy users at all.
+
+When responding:
+- Lead with your bad experience to set the stakes. ("Last time I took messaging advice, we lost a third of our users. So before you tell me what to say, tell me — what do you actually know about users who earn ₦80k a month and need a home?")
+- Ask hard questions about audience understanding and how they validate assumptions before making recommendations.
+- 1-2 pointed questions. 3-4 sentences. Tired and protective, not hostile.`
+    },
+    {
+      id: "pt5",
+      name: "Emeka Nwachukwu",
+      company: "PropFlow",
+      title: "Founder, PropFlow — Smart Leasing Platform",
+      avatar: "EN",
+      sector: "proptech",
+      personality: "UNCERTAIN",
+      personalityColor: "#6b9fb8",
+      pain: "Landlords love us. Tenants think we're a landlord tool. We're supposed to be neutral infrastructure — but we're perceived as taking sides. I don't know how to message neutrality.",
+      bio: "Product designer turned founder. PropFlow digitizes lease agreements and dispute resolution. Caught between two distrustful parties in every transaction. Not sure if messaging can fix a structural positioning problem.",
+      systemPrompt: `You are Emeka Nwachukwu, Founder of PropFlow, a smart leasing and dispute resolution platform. You are UNCERTAIN. You have a genuine positioning dilemma — you serve both landlords and tenants but are perceived as a landlord tool. You're not sure if this is a messaging problem, a product problem, or a positioning problem.
+
+Your honest uncertainty: you've read about positioning and messaging strategy. You know the theory. But when both sides of your marketplace distrust you, you wonder if messaging is even the right starting point.
+
+When responding:
+- Ask clarifying questions that probe their diagnostic process. ("How do you figure out if something is a messaging problem versus a positioning problem? Because I'm not even sure which one this is.")
+- Share the dilemma openly — but push back on any simple answer.
+- You're open, curious, but need to see real thinking before you commit.
+- 1-2 genuine questions. Up to 5 sentences. Thoughtful and exploratory.`
+    }
+  ]
+};
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let state = {
+  sector: "fintech",
+  founder: null,
+  messages: [],
+  timerSeconds: 120,
+  timerActive: false,
+  timerExpired: false,
+  timerInterval: null,
+  sessionStarted: false,
+  loading: false,
+};
+
+// ─── UTILS ────────────────────────────────────────────────────────────────────
+function fmt(s) {
+  return Math.floor(s/60) + ":" + String(s%60).padStart(2,"0");
+}
+
+function getApiKey() {
+  return document.getElementById("api-key-input").value.trim();
+}
+
+function accent() {
+  return state.sector === "fintech" ? "var(--fintech)" : "var(--proptech)";
+}
+
+function accentHex() {
+  return state.sector === "fintech" ? "#c9a84c" : "#6b9fb8";
+}
+
+// ─── RENDER SIDEBAR ───────────────────────────────────────────────────────────
+function renderSidebar() {
+  const list = document.getElementById("founder-list");
+  list.innerHTML = "";
+  const founders = FOUNDERS[state.sector];
+  founders.forEach(f => {
+    const item = document.createElement("div");
+    item.className = "founder-item" + (state.founder?.id === f.id ? " active" : "");
+    item.style.setProperty("--active-accent", f.personalityColor);
+    item.innerHTML = `
+      <div class="avatar" style="background:${f.personalityColor}18;color:${f.personalityColor};border:1px solid ${f.personalityColor}33;">${f.avatar}</div>
+      <div class="founder-meta">
+        <div class="founder-name">${f.name}</div>
+        <div class="founder-company">${f.company}</div>
+      </div>
+      <div class="personality-badge" style="color:${f.personalityColor};border-color:${f.personalityColor}55;">${f.personality}</div>
+    `;
+    item.onclick = () => selectFounder(f);
+    list.appendChild(item);
+  });
+}
+
+function updateInfoPanel() {
+  const f = state.founder;
+  if (!f) {
+    document.getElementById("info-pain-label").style.color = "var(--muted)";
+    document.getElementById("info-pain-label").textContent = "Select a founder";
+    document.getElementById("info-pain-text").textContent = "Their core pain point and what's at stake will appear here.";
+    return;
+  }
+  document.getElementById("info-pain-label").style.color = f.personalityColor;
+  document.getElementById("info-pain-label").textContent = "THEIR PAIN";
+  document.getElementById("info-pain-text").textContent = `"${f.pain}"`;
+}
+
+// ─── SECTOR SWITCH ────────────────────────────────────────────────────────────
+function switchSector(sector) {
+  state.sector = sector;
+  document.querySelectorAll(".tab").forEach(t => {
+    t.classList.toggle("active", t.dataset.sector === sector);
+  });
+  state.founder = null;
+  state.messages = [];
+  state.sessionStarted = false;
+  stopTimer();
+  renderSidebar();
+  updateInfoPanel();
+  renderHeader();
+  showEmpty();
+}
+
+// ─── SELECT FOUNDER ───────────────────────────────────────────────────────────
+function selectFounder(f) {
+  state.founder = f;
+  state.messages = [];
+  state.sessionStarted = false;
+  state.timerExpired = false;
+  stopTimer();
+  renderSidebar();
+  updateInfoPanel();
+  renderHeader();
+  showStartPrompt();
+}
+
+function renderHeader() {
+  const f = state.founder;
+  const av = document.getElementById("header-avatar");
+  const name = document.getElementById("chat-founder-name");
+  const meta = document.getElementById("chat-founder-meta");
+
+  if (!f) {
+    av.textContent = "";
+    av.style.background = "var(--border2)";
+    av.style.color = "var(--muted)";
+    name.textContent = "—";
+    meta.textContent = "Pick a founder from the sidebar to begin";
+    document.getElementById("timer-wrap").classList.add("hidden");
+    return;
+  }
+
+  av.textContent = f.avatar;
+  av.style.background = f.personalityColor + "22";
+  av.style.color = f.personalityColor;
+  av.style.border = `1px solid ${f.personalityColor}44`;
+  av.style.width = "42px";
+  av.style.height = "42px";
+  av.style.fontSize = "11px";
+
+  name.innerHTML = `${f.name} <span class="personality-tag" style="color:${f.personalityColor};border-color:${f.personalityColor}55;">${f.personality}</span>`;
+  meta.textContent = f.title;
+}
+
+// ─── TIMER ────────────────────────────────────────────────────────────────────
+const CIRC = 2 * Math.PI * 22;
+document.getElementById("timer-fill").style.strokeDasharray = CIRC;
+document.getElementById("timer-fill").style.strokeDashoffset = 0;
+
+function startTimer() {
+  state.timerSeconds = 120;
+  state.timerActive = true;
+  state.timerExpired = false;
+  document.getElementById("timer-wrap").classList.remove("hidden","danger");
+  document.getElementById("expired-banner").classList.remove("visible");
+  renderTimer();
+  clearInterval(state.timerInterval);
+  state.timerInterval = setInterval(() => {
+    state.timerSeconds--;
+    renderTimer();
+    if (state.timerSeconds <= 0) {
+      stopTimer();
+      state.timerExpired = true;
+      document.getElementById("expired-banner").classList.add("visible");
+    }
+  }, 1000);
+}
+
+function stopTimer() {
+  clearInterval(state.timerInterval);
+  state.timerActive = false;
+}
+
+function renderTimer() {
+  const t = state.timerSeconds;
+  const pct = t / 120;
+  const offset = CIRC * (1 - pct);
+  const fill = document.getElementById("timer-fill");
+  const label = document.getElementById("timer-label");
+  const bar = document.getElementById("timer-bar");
+  const wrap = document.getElementById("timer-wrap");
+
+  const color = t > 60 ? accentHex() : t > 30 ? "#d4874a" : "#e05c5c";
+  fill.style.strokeDashoffset = offset;
+  fill.style.stroke = color;
+  label.style.color = color;
+  label.textContent = t <= 0 ? "—" : fmt(t);
+
+  bar.style.width = (pct * 100) + "%";
+  bar.style.background = color;
+
+  if (t <= 20 && t > 0) wrap.classList.add("danger");
+  else wrap.classList.remove("danger");
+
+  document.getElementById("send-btn").style.background = accentHex();
+}
+
+// ─── VIEWS ────────────────────────────────────────────────────────────────────
+function showEmpty() {
+  const body = document.getElementById("chat-body");
+  body.innerHTML = `
+    <div id="empty-state">
+      <div id="empty-icon">"</div>
+      <div id="empty-title">Choose your founder</div>
+      <div id="empty-body">Pick a fintech or proptech founder from the left. Each one has a different personality — distrustful, skeptical, accusatory, burnt, uncertain. You pitch. They push back. You have 2 minutes.</div>
+    </div>`;
+  document.getElementById("input-area").classList.remove("visible");
+  document.getElementById("expired-banner").classList.remove("visible");
+  document.getElementById("timer-wrap").classList.add("hidden");
+}
+
+function showStartPrompt() {
+  const f = state.founder;
+  const body = document.getElementById("chat-body");
+  body.innerHTML = `
+    <div id="start-prompt">
+      <div id="start-text">
+        You're approaching <strong>${f.name}</strong>, ${f.title}.<br/>
+        They are <strong style="color:${f.personalityColor}">${f.personality}</strong>.<br/>
+        How do you want to open?
+      </div>
+      <div class="start-actions">
+        <button class="start-btn primary" style="background:${f.personalityColor}" onclick="kickoffWithIntro()">Let them introduce themselves first →</button>
+        <button class="start-btn secondary" onclick="kickoffDirectPitch()">I'll drop my pitch directly</button>
+      </div>
+    </div>`;
+  document.getElementById("input-area").classList.remove("visible");
+  document.getElementById("expired-banner").classList.remove("visible");
+  document.getElementById("timer-wrap").classList.add("hidden");
+}
+
+// ─── SESSION KICKOFF ──────────────────────────────────────────────────────────
+async function kickoffWithIntro() {
+  state.sessionStarted = true;
+  document.getElementById("chat-body").innerHTML = "";
+  document.getElementById("input-area").classList.add("visible");
+  document.getElementById("send-btn").style.background = accentHex();
+  showTyping();
+  const reply = await callClaude([{
+    role: "user",
+    content: "Introduce yourself — who you are, what your company does, and the one trust problem keeping you up at night. Be specific. Max 3 sentences. Sound like yourself."
+  }]);
+  removeTyping();
+  appendMessage("them", reply);
+  startTimer();
+}
+
+async function kickoffDirectPitch() {
+  state.sessionStarted = true;
+  document.getElementById("chat-body").innerHTML = "";
+  document.getElementById("input-area").classList.add("visible");
+  document.getElementById("send-btn").style.background = accentHex();
+  document.getElementById("msg-input").focus();
+  // Timer doesn't start until founder responds
+}
+
+// ─── MESSAGING ────────────────────────────────────────────────────────────────
+function appendMessage(role, text) {
+  const body = document.getElementById("chat-body");
+  const f = state.founder;
+  const row = document.createElement("div");
+  row.className = "msg-row " + (role === "user" ? "user" : "");
+
+  if (role === "them") {
+    const av = document.createElement("div");
+    av.className = "avatar";
+    av.style.cssText = `width:28px;height:28px;font-size:9px;background:${f.personalityColor}22;color:${f.personalityColor};border:1px solid ${f.personalityColor}44;flex-shrink:0;align-self:flex-end;`;
+    av.textContent = f.avatar;
+    row.appendChild(av);
+  }
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble " + (role === "user" ? "user" : "them");
+  if (role === "user") {
+    bubble.style.background = f.personalityColor + "25";
+    bubble.style.borderColor = f.personalityColor + "44";
+  }
+  bubble.textContent = text;
+  row.appendChild(bubble);
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
+
+function showTyping() {
+  const body = document.getElementById("chat-body");
+  const f = state.founder;
+  const row = document.createElement("div");
+  row.className = "msg-row";
+  row.id = "typing-row";
+
+  const av = document.createElement("div");
+  av.className = "avatar";
+  av.style.cssText = `width:28px;height:28px;font-size:9px;background:${f.personalityColor}22;color:${f.personalityColor};border:1px solid ${f.personalityColor}44;flex-shrink:0;align-self:flex-end;`;
+  av.textContent = f.avatar;
+  row.appendChild(av);
+
+  const bubble = document.createElement("div");
+  bubble.className = "bubble them typing";
+  bubble.innerHTML = "<span>●</span><span>●</span><span>●</span>";
+  row.appendChild(bubble);
+  body.appendChild(row);
+  body.scrollTop = body.scrollHeight;
+}
+
+function removeTyping() {
+  const row = document.getElementById("typing-row");
+  if (row) row.remove();
+}
+
+async function sendMessage() {
+  const input = document.getElementById("msg-input");
+  const text = input.value.trim();
+  if (!text || state.loading) return;
+
+  stopTimer();
+  state.timerExpired = false;
+  document.getElementById("expired-banner").classList.remove("visible");
+  document.getElementById("timer-wrap").classList.remove("hidden");
+
+  appendMessage("user", text);
+  state.messages.push({ role: "user", content: text });
+  input.value = "";
+  input.style.height = "auto";
+  document.getElementById("send-btn").disabled = true;
+  state.loading = true;
+
+  showTyping();
+
+  const reply = await callClaude(state.messages);
+  state.messages.push({ role: "assistant", content: reply });
+
+  removeTyping();
+  appendMessage("them", reply);
+  state.loading = false;
+  document.getElementById("send-btn").disabled = false;
+  startTimer();
+}
+
+// ─── CLAUDE API ───────────────────────────────────────────────────────────────
+async function callClaude(messages) {
+  const key = getApiKey();
+  if (!key) return "⚠️ Please enter your Anthropic API key in the bottom-left to begin.";
+
+  try {
+    const res = await fetch("https://api.anthropic.com/v1/messages", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "x-api-key": key,
+        "anthropic-version": "2023-06-01",
+        "anthropic-dangerous-direct-browser-access": "true"
+      },
+      body: JSON.stringify({
+        model: "claude-sonnet-4-20250514",
+        max_tokens: 1000,
+        system: state.founder.systemPrompt,
+        messages: messages
+      })
+    });
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({}));
+      return `⚠️ API error ${res.status}: ${err?.error?.message || "Unknown error"}`;
+    }
+    const data = await res.json();
+    return data.content?.[0]?.text || "...";
+  } catch (e) {
+    return `⚠️ Network error: ${e.message}`;
+  }
+}
+
+// ─── INPUT HANDLERS ───────────────────────────────────────────────────────────
+const msgInput = document.getElementById("msg-input");
+msgInput.addEventListener("input", () => {
+  document.getElementById("send-btn").disabled = !msgInput.value.trim();
+  msgInput.style.height = "auto";
+  msgInput.style.height = Math.min(msgInput.scrollHeight, 120) + "px";
+});
+msgInput.addEventListener("keydown", e => {
+  if (e.key === "Enter" && !e.shiftKey) {
+    e.preventDefault();
+    if (!document.getElementById("send-btn").disabled) sendMessage();
+  }
+});
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+renderSidebar();
+renderTimer();
+document.getElementById("send-btn").style.background = accentHex();
+
+// Set initial timer bar width
+document.getElementById("timer-bar").style.width = "100%";
+document.getElementById("timer-bar").style.background = accentHex();
+</script>
+</body>
+</html>
